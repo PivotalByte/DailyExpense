@@ -1,9 +1,11 @@
 name: Android Build & Email APK
 
 on:
-  push:
+  pull_request:
     branches:
-      - master  # runs when any commit is pushed to master
+      - master
+    types:
+      - closed  # triggers when PR is closed (merged or declined)
 
 jobs:
   build:
@@ -29,11 +31,13 @@ jobs:
         id: find_apk
         run: echo "apk_path=$(find $GITHUB_WORKSPACE -name '*.apk' | head -n 1)" >> $GITHUB_OUTPUT
 
-      - name: Upload APK as artifact
-        uses: actions/upload-artifact@v4
+      - name: Upload APK to GitHub Releases
+        uses: softprops/action-gh-release@v2
         with:
-          name: android-apk
-          path: ${{ steps.find_apk.outputs.apk_path }}
+          tag_name: build-${{ github.run_id }}
+          files: ${{ steps.find_apk.outputs.apk_path }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Send email with APK link
         uses: dawidd6/action-send-mail@v3
