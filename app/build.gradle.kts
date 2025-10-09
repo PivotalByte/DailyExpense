@@ -1,3 +1,4 @@
+import org.gradle.kotlin.dsl.implementation
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -75,7 +76,6 @@ dependencies {
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.foundation)
-    implementation(libs.androidx.room.ktx)
 
     // Testing dependencies
     testImplementation(libs.junit)
@@ -135,7 +135,8 @@ dependencies {
     //Calendar
     implementation(libs.compose.multiplatform)
 
+    // Google service
+    implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
-
 
 }
