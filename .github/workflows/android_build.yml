@@ -28,24 +28,34 @@ jobs:
         id: find_apk
         run: echo "apk_path=$(find $GITHUB_WORKSPACE -name '*.apk' | head -n 1)" >> $GITHUB_OUTPUT
 
-      - name: Send email with APK
+      - name: Upload APK as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: ${{ steps.find_apk.outputs.apk_path }}
+
+      - name: Send email with APK link
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: smtp.gmail.com
           server_port: 465
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
-          subject: "New APK Build - ${{ github.repository }}"
-          to: deepmakadia1504@gmail.com
+          subject: "New Android Build - ${{ github.repository }}"
+          to: your-email@example.com
           from: "GitHub CI <${{ secrets.EMAIL_USERNAME }}>"
           body: |
             Hi team,
-
-            A new build of the Android app has been generated from the latest commit on master.
-            You can find the APK attached below.
-
+                  
+            A new Android build has been generated from the latest commit on the master branch.
+                  
+            Repository: ${{ github.repository }}
             Commit: ${{ github.sha }}
-            Repo: ${{ github.repository }}
-
-            - GitHub Actions
-          attachments: ${{ steps.find_apk.outputs.apk_path }}
+            Branch: ${{ github.ref_name }}
+                  
+            Download the latest APK here:
+            https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+                  
+            This link will take you to the workflow run where you can download the APK under "Artifacts".
+                  
+            – GitHub Actions Build Bot
