@@ -5,10 +5,14 @@ on:
     branches:
       - master
     types:
-      - closed  # triggers when PR is closed (merged or declined)
+      - closed
+
+permissions:
+  contents: write
 
 jobs:
   build:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
     steps:
@@ -47,20 +51,19 @@ jobs:
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
           subject: "New Android Build - ${{ github.repository }}"
-          to: deepmakadia1504@gmail.com
+          to: deepmakadia1504@gmail.com, panchalmihir5199@gmail.com
           from: "GitHub CI <${{ secrets.EMAIL_USERNAME }}>"
           body: |
             Hi team,
-                  
-            A new Android build has been generated from the latest commit on the master branch.
-                  
+            
+            A new Android build has been generated from a merged pull request into the master branch.
+            
             Repository: ${{ github.repository }}
             Commit: ${{ github.sha }}
             Branch: ${{ github.ref_name }}
-                  
+            PR Title: ${{ github.event.pull_request.title }}
+            
             Download the latest APK here:
-            https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
-                  
-            This link will take you to the workflow run where you can download the APK under "Artifacts".
-                  
+            https://github.com/${{ github.repository }}/releases/tag/build-${{ github.run_id }}
+            
             – GitHub Actions Build Bot
