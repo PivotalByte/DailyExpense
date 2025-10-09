@@ -1,0 +1,42 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+
+  <!-- Small yellow dot -->
+  <path
+      android:pathData="M77,12A1,1 0,1 0,77 14A1,1 0,1 0,77 12Z"
+      android:fillColor="#f1bc19" />
+
+  <!-- Main shape: Rounded square (centered) -->
+  <path
+      android:pathData="M25,15 h50 a8,8 0 0 1 8,8 v50 a8,8 0 0 1 -8,8 h-50 a8,8 0 0 1 -8,-8 v-50 a8,8 0 0 1 8,-8 z"
+      android:fillColor="#c0e5e4" />
+
+  <!-- Yellow circle -->
+  <path
+      android:pathData="M83,11A4,4 0,1 0,83 19A4,4 0,1 0,83 11Z"
+      android:fillColor="#f1bc19" />
+
+  <!-- Teal circle -->
+  <path
+      android:pathData="M87,22A2,2 0,1 0,87 26A2,2 0,1 0,87 22Z"
+      android:fillColor="#00a5a5" />
+
+  <!-- Yellow circles -->
+  <path
+      android:pathData="M81,74A2,2 0,1 0,81 78,2 2,0 1,0 81,74zM15,59A4,4 0,1 0,15 67,4 4,0 1,0 15,59z"
+      android:fillColor="#fbcd59" />
+
+  <!-- Teal small circle -->
+  <path
+      android:pathData="M25,85A2,2 0,1 0,25 89A2,2 0,1 0,25 85Z"
+      android:fillColor="#00a5a5" />
+
+  <!-- White dots -->
+  <path
+      android:pathData="M18.5,49A2.5,2.5 0,1 0,18.5 54,2.5 2.5,0 1,0 18.5,49zM79.5,32A1.5,1.5 0,1 0,79.5 35,1.5 1.5,0 1,0 79.5,32z"
+      android:fillColor="#fff" />
+
+</vector>
