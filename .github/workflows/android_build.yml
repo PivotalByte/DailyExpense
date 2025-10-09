@@ -39,11 +39,11 @@ jobs:
         with:
           server_address: smtp.gmail.com
           server_port: 465
-          username: ${{ deepmakadia1504@gmail.com }}
-          password: ${{ cesteremypvgqrih }}
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
           subject: "New Android Build - ${{ github.repository }}"
           to: deepmakadia1504@gmail.com
-          from: "GitHub CI <${{ cesteremypvgqrih }}>"
+          from: "GitHub CI <${{ secrets.EMAIL_USERNAME }}>"
           body: |
             Hi team,
                   
