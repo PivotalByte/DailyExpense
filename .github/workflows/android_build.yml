@@ -1,9 +1,11 @@
 name: Android Build & Email APK
 
 on:
-  push:
+  pull_request:
     branches:
-      - master  # runs when any commit is pushed to master
+      - master
+    types:
+      - closed  # triggers when PR is closed (merged or declined)
 
 jobs:
   build:
