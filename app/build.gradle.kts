@@ -1,3 +1,4 @@
+import org.gradle.kotlin.dsl.implementation
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -135,7 +136,8 @@ dependencies {
     //Calendar
     implementation(libs.compose.multiplatform)
 
+    // Google service
+    implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
-
 
 }

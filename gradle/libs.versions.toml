@@ -2,6 +2,7 @@
 agp = "8.13.0"
 balloon-compose = "1.6.13"
 compose-multiplatform = "2.9.0"
+firebase-bom = "34.3.0"
 kotlin = "2.2.20"
 core-ktx = "1.17.0"
 junit = "4.13.2"
@@ -43,6 +44,7 @@ androidx-paging-runtime = { module = "androidx.paging:paging-runtime", version.r
 balloon-compose = { module = "com.github.skydoves:balloon-compose", version.ref = "balloon-compose" }
 compose-multiplatform = { module = "com.kizitonwose.calendar:compose-multiplatform", version.ref = "compose-multiplatform" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-junit" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-core" }
