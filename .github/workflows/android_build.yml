@@ -36,13 +36,13 @@ jobs:
         run: |
           echo "apk_path=$(find $GITHUB_WORKSPACE -name '*.apk' | head -n 1)" >> $GITHUB_OUTPUT
 
-      - name: Create GitHub Release
+      - name: Upload APK to GitHub Releases
         uses: softprops/action-gh-release@v2
         with:
           tag_name: apk-build-${{ github.run_id }}
           files: ${{ steps.find_apk.outputs.apk_path }}
-          env:
-            GITHUB_TOKEN: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Send email with APK link
         uses: dawidd6/action-send-mail@v3
@@ -52,7 +52,7 @@ jobs:
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
           subject: "New Android Build - ${{ github.repository }}"
-          to: deepmakadia1504@gmail.com, panchalmihir5199@gmail.com
+          to: deepmakadia1504@gmail.com, Panchalmihir5199@gmail.com
           from: "GitHub CI <${{ secrets.EMAIL_USERNAME }}>"
           body: |
             Hi team,
