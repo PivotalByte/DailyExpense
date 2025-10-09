@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1018564445621",
+    "project_id": "daily-expense-5a7eb",
+    "storage_bucket": "daily-expense-5a7eb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1018564445621:android:1805e3362d9a90a50d05fc",
+        "android_client_info": {
+          "package_name": "com.dailyexpense"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDOb7DTa6laLSjKcF86o5meJPlFVimLrtI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
