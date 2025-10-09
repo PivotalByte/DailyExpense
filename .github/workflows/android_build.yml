@@ -34,7 +34,7 @@ jobs:
       - name: Find generated APK
         id: find_apk
         run: |
-          APK_PATH=$(find $GITHUB_WORKSPACE -name '*-release.apk' | head -n 1)
+          APK_PATH=$(find $GITHUB_WORKSPACE -name '*-debug.apk' | head -n 1)
           echo "apk_path=$APK_PATH" >> $GITHUB_OUTPUT
 
       - name: Upload APK to Firebase App Distribution
