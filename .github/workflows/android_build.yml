@@ -29,20 +29,20 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build APK
-        run: ./gradlew assemble
+        run: ./gradlew assembleDebug
 
       - name: Find generated APK
         id: find_apk
-        run: echo "apk_path=$(find $GITHUB_WORKSPACE -name '*.apk' | head -n 1)" >> $GITHUB_OUTPUT
+        run: |
+          echo "apk_path=$(find $GITHUB_WORKSPACE -name '*.apk' | head -n 1)" >> $GITHUB_OUTPUT
 
-      - name: Upload APK artifact
-        uses: actions/upload-artifact@v4
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
         with:
-          name: android-apk
-          path: app/build/outputs/apk/debug/app-debug.apk
-
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: apk-build-${{ github.run_id }}
+          files: ${{ steps.find_apk.outputs.apk_path }}
+          env:
+            GITHUB_TOKEN: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
 
       - name: Send email with APK link
         uses: dawidd6/action-send-mail@v3
