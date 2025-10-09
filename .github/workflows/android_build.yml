@@ -34,14 +34,14 @@ jobs:
       - name: Find generated APK
         id: find_apk
         run: |
-          APK_PATH=$(find $GITHUB_WORKSPACE -name '*-debug.apk' | head -n 1)
+          APK_PATH=$(find $GITHUB_WORKSPACE -name '*-release.apk' | head -n 1)
           echo "apk_path=$APK_PATH" >> $GITHUB_OUTPUT
 
       - name: Upload APK to Firebase App Distribution
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
           appId: ${{ secrets.FIREBASE_APP_ID }}      # Firebase Android App ID
-          serviceCredentialsFileContent: ${{ secrets.CREDENTIAL_FILE_CONTENT }}
+          token: ${{ secrets.FIREBASE_AUTH_TOKEN }}  # Firebase token generated via `firebase login:ci`
           groups: "testers"                           # Firebase tester group(s)
           file: ${{ steps.find_apk.outputs.apk_path }}
           releaseNotes: "Automated build from commit ${{ github.sha }}"
