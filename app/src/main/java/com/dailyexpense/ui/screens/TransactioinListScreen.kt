@@ -27,7 +27,7 @@ import com.dailyexpense.presentation.FilterViewModel
 import com.dailyexpense.presentation.SortViewModel
 import com.dailyexpense.presentation.TransactionListViewModel
 import com.dailyexpense.ui.bottomsheet.BottomSheetHost
-import com.dailyexpense.ui.bottomsheet.factory.rememberBottomSheetController
+import com.dailyexpense.ui.bottomsheet.factory.rememberCustomBottomSheetController
 import com.dailyexpense.ui.bottomsheet.sheets.FilterBottomSheet
 import com.dailyexpense.ui.bottomsheet.sheets.SortBottomSheet
 import com.dailyexpense.ui.components.ErrorItem
@@ -56,7 +56,7 @@ fun TransactionListScreen(
     val listState = rememberLazyListState()
     var searchQuery by remember { mutableStateOf(value = "") }
 
-    val bottomSheetController = rememberBottomSheetController()
+    val bottomSheetController = rememberCustomBottomSheetController()
 
     BottomSheetHost(controller = bottomSheetController) {
         Column(modifier = Modifier.fillMaxSize()) {

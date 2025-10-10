@@ -42,7 +42,7 @@ import com.dailyexpense.data.models.TransactionStats
 import com.dailyexpense.presentation.AnalyticsViewModel
 import com.dailyexpense.ui.bottomsheet.BottomSheetHost
 import com.dailyexpense.ui.bottomsheet.controller.BottomSheetController
-import com.dailyexpense.ui.bottomsheet.factory.rememberBottomSheetController
+import com.dailyexpense.ui.bottomsheet.factory.rememberCustomBottomSheetController
 import com.dailyexpense.ui.bottomsheet.sheets.CalendarPickerBottomSheet
 import com.dailyexpense.ui.components.AmountCard
 import com.dailyexpense.ui.components.StatsRow
@@ -89,7 +89,7 @@ fun AnalyticsScreen(
         Duration.Custom to stringResource(id = R.string.label_custom),
     )
 
-    val bottomSheetController = rememberBottomSheetController()
+    val bottomSheetController = rememberCustomBottomSheetController()
     BottomSheetHost(controller = bottomSheetController) {
         AnalyticsScreenContent(
             durationState = durationState,
@@ -497,7 +497,7 @@ fun PreviewAnalyticsScreen() {
             transactionCategoryExpenseSummary = emptyList(),
             transactionCategoryIncomeSummary = emptyList(),
             stats = TransactionStats(),
-            bottomSheetController = rememberBottomSheetController(),
+            bottomSheetController = rememberCustomBottomSheetController(),
         )
     }
 }

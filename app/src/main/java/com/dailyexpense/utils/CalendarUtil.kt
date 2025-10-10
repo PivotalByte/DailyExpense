@@ -248,8 +248,8 @@ suspend fun LazyListState.animateScrollAndCenterItem(index: Int) {
     suspend fun animateScrollIfVisible(): Boolean {
         val layoutInfo = layoutInfo
         val containerSize = layoutInfo.viewportSize.width -
-                layoutInfo.beforeContentPadding -
-                layoutInfo.afterContentPadding
+            layoutInfo.beforeContentPadding -
+            layoutInfo.afterContentPadding
         val target = layoutInfo.visibleItemsInfo.firstOrNull { it.index == index } ?: return false
         val targetOffset = containerSize / 2f - target.size / 2f
         animateScrollBy(target.offset - targetOffset)

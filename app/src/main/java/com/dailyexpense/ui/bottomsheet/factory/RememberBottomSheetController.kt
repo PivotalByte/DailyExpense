@@ -9,7 +9,7 @@ import com.dailyexpense.ui.bottomsheet.controller.BottomSheetController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun rememberBottomSheetController(): BottomSheetController {
+fun rememberCustomBottomSheetController(): BottomSheetController {
     val scope = rememberCoroutineScope()
     val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     return remember { BottomSheetController(scope, state) }
