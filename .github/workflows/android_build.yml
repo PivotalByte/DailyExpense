@@ -42,7 +42,7 @@ jobs:
         with:
           appId: ${{ secrets.FIREBASE_APP_ID }}      # Firebase Android App ID
           serviceCredentialsFileContent: ${{ secrets.CREDENTIAL_FILE_CONTENT }}
-          groups: "testers"                           # Firebase tester group(s)
+          groups: "devs"                           # Firebase tester group(s)
           file: ${{ steps.find_apk.outputs.apk_path }}
           releaseNotes: "Automated build from commit ${{ github.sha }}"
 
