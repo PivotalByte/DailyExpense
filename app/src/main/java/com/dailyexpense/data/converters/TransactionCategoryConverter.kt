@@ -2,7 +2,6 @@ package com.dailyexpense.data.converters
 
 import androidx.room.TypeConverter
 import com.dailyexpense.data.enums.TransactionCategory
-import com.dailyexpense.data.enums.TransactionType
 
 class TransactionCategoryConverter {
 

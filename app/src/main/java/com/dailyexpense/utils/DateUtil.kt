@@ -94,7 +94,6 @@ object DateUtil {
         return start to end
     }
 
-
     fun LocalDate.toMillis(timeZone: TimeZone = TimeZone.currentSystemDefault()): Long {
         return this.atStartOfDayIn(timeZone).toEpochMilliseconds()
     }
@@ -110,7 +109,6 @@ object DateUtil {
             .date
     }
 
-
     fun LocalDate?.endOfDayOrTodayMillis(timeZone: TimeZone = TimeZone.currentSystemDefault()): Long {
         val now = Clock.System.now().toLocalDateTime(timeZone).date
         val dateToUse = this ?: now
@@ -119,7 +117,6 @@ object DateUtil {
             .atStartOfDayIn(timeZone)
             .toEpochMilliseconds() - 1
     }
-
 
     fun calculateDateRange(duration: Duration): Pair<Long?, Long?> {
         return when (duration) {
@@ -142,15 +139,18 @@ object DateUtil {
         return when (duration) {
             is Duration.Today -> {
                 val formatter = LocalDate.Format {
-                    day(Padding.NONE); char(value = ' ')
-                    monthName(names = MonthNames.ENGLISH_ABBREVIATED); char(value = ' ')
+                    day(Padding.NONE)
+                    char(value = ' ')
+                    monthName(names = MonthNames.ENGLISH_ABBREVIATED)
+                    char(value = ' ')
                     year()
                 }
                 startLocalDate.format(formatter)
             }
             is Duration.ThisWeek -> {
                 val dayMonthFormatter = LocalDate.Format {
-                    day(Padding.NONE); char(value = ' ')
+                    day(Padding.NONE)
+                    char(value = ' ')
                     monthName(names = MonthNames.ENGLISH_ABBREVIATED)
                 }
                 "${startLocalDate.format(dayMonthFormatter)} - ${endLocalDate.format(dayMonthFormatter)}"
@@ -166,16 +166,16 @@ object DateUtil {
             }
             is Duration.Custom -> {
                 val fullFormatter = LocalDate.Format {
-                    day(Padding.NONE); char(value = ' ')
-                    monthName(names = MonthNames.ENGLISH_ABBREVIATED); char(value = ' ')
+                    day(Padding.NONE)
+                    char(value = ' ')
+                    monthName(names = MonthNames.ENGLISH_ABBREVIATED)
+                    char(value = ' ')
                     year()
                 }
                 "${startLocalDate.format(fullFormatter)} - ${endLocalDate.format(fullFormatter)}"
             }
-
         }
     }
-
 
     fun LocalDate.startOfWeek(): Long {
         val dayOfWeekValue = dayOfWeek.isoDayNumber

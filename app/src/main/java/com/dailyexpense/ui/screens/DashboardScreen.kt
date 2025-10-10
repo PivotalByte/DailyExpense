@@ -22,7 +22,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.dailyexpense.R
 import com.dailyexpense.data.fakeCategories
@@ -38,13 +37,10 @@ import com.dailyexpense.ui.theme.IncomeColor
 import com.dailyexpense.ui.theme.LocalCustomColors
 import com.dailyexpense.utils.extensions.toIndianCurrencyFormat
 
-
 @Composable
 fun DashboardScreen(
-    navController: NavHostController,
     viewModel: DashboardViewModel = hiltViewModel()
 ) {
-
     val categories by viewModel.categories.collectAsState()
     val recentTransactions by viewModel.recentTransactions.collectAsState()
     val totalBalance by viewModel.totalBalance.collectAsState()
@@ -52,7 +48,6 @@ fun DashboardScreen(
     val totalIncome by viewModel.totalIncome.collectAsState()
 
     DashboardScreenView(
-        navController,
         categories,
         recentTransactions,
         totalBalance = totalBalance.toIndianCurrencyFormat(),
@@ -63,11 +58,10 @@ fun DashboardScreen(
 
 @Composable
 fun DashboardScreenView(
-    navController: NavHostController,
     categories: List<CategoryEntity>,
     recentTransactions: List<TransactionEntity>,
     totalBalance: String,
-    totalExpense : String,
+    totalExpense: String,
     totalIncome: String
 ) {
     LazyColumn(

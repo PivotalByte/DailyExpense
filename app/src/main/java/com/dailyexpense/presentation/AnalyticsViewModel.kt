@@ -23,14 +23,11 @@ import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 
-
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class AnalyticsViewModel @Inject constructor(
     private val repository: DatabaseRepository,
 ) : ViewModel() {
-
-
     private val _startDate = MutableStateFlow(getThisWeekRange().first)
     private val _endDate = MutableStateFlow(getThisWeekRange().second)
     private val _duration = MutableStateFlow<Duration>(Duration.ThisWeek)

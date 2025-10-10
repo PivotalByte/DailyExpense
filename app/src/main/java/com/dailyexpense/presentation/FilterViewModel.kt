@@ -37,5 +37,4 @@ class FilterViewModel @Inject constructor(
             started = SharingStarted.Lazily,
             initialValue = emptyList()
         )
-
 }

@@ -25,8 +25,20 @@ jobs:
           distribution: 'temurin'
           java-version: 17
 
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: gradle-${{ runner.os }}
+
       - name: Grant execute permission for Gradle
         run: chmod +x gradlew
+
+      - name: Run Lint Checks
+        run: ./gradlew lint
 
       - name: Build APK
         run: ./gradlew assembleDebug
@@ -46,29 +58,5 @@ jobs:
           file: ${{ steps.find_apk.outputs.apk_path }}
           releaseNotes: "Automated build from commit ${{ github.sha }}"
 
-      - name: Send email with APK link
-        uses: dawidd6/action-send-mail@v3
-        with:
-          server_address: smtp.gmail.com
-          server_port: 465
-          username: ${{ secrets.EMAIL_USERNAME }}
-          password: ${{ secrets.EMAIL_PASSWORD }}
-          subject: "New Android Build - ${{ github.repository }}"
-          to: deepmakadia1504@gmail.com, panchalmihir5199@gmail.com
-          from: "GitHub CI <${{ secrets.EMAIL_USERNAME }}>"
-          body: |
-            Hi team,
-            
-            A new Android build has been generated from a merged pull request into the master branch.
-            
-            Repository: ${{ github.repository }}
-            Commit: ${{ github.sha }}
-            Branch: ${{ github.ref_name }}
-            PR Title: ${{ github.event.pull_request.title }}
-            
-            Download the latest APK here:
-            https://github.com/${{ github.repository }}/releases/tag/build-${{ github.run_id }}
-            
-            – GitHub Actions Build Bot
 
 

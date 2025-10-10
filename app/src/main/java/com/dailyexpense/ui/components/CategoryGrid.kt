@@ -46,7 +46,6 @@ fun CategoryGrid(
     }
 }
 
-
 @Preview
 @Composable
 fun PreviewCategoryGrid() {

@@ -62,7 +62,7 @@ fun SortOptionCard(
 
 @Preview
 @Composable
-fun PreviewSortOptionCard(){
+fun PreviewSortOptionCard() {
     DailyExpenseTheme(modifier = Modifier.wrapContentSize()) {
         SortOptionCard(
             title = "Sort option",

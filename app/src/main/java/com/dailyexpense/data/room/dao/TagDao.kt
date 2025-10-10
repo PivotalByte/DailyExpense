@@ -15,5 +15,4 @@ interface TagDao {
 
     @Query("SELECT * FROM DE_tags")
     fun getAllTags(): Flow<List<TagEntity>>
-
 }

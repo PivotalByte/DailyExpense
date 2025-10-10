@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface AccountDao {
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAccount(accountEntity: AccountEntity)
 
@@ -19,5 +18,4 @@ interface AccountDao {
 
     @Query("SELECT SUM(balance) FROM DE_account")
     fun getTotalBalance(): Flow<Double>
-
 }

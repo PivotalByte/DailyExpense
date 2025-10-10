@@ -11,7 +11,6 @@ import androidx.compose.ui.res.painterResource
 import com.dailyexpense.R
 import com.dailyexpense.ui.theme.LocalCustomColors
 
-
 @Composable
 fun CheckBox(
     modifier: Modifier,
@@ -19,7 +18,7 @@ fun CheckBox(
     selectedColor: Color = LocalCustomColors.current.primaryColor,
     unselectedColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
     tickColor: Color = Color.White,
-){
+) {
     Box(
         contentAlignment = Alignment.Center
     ) {
@@ -33,8 +32,11 @@ fun CheckBox(
         }
 
         Icon(
-            painter = if (isSelected) painterResource(id = R.drawable.ic_tick)
-            else painterResource(id = R.drawable.ic_tick_empty),
+            painter = if (isSelected) {
+                painterResource(id = R.drawable.ic_tick)
+            } else {
+                painterResource(id = R.drawable.ic_tick_empty)
+            },
             contentDescription = "Tick Icon",
             tint = if (isSelected) tickColor else unselectedColor,
             modifier = modifier

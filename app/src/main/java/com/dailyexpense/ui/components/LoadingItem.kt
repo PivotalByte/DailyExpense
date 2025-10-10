@@ -19,4 +19,3 @@ fun LoadingItem(text: String) {
         Text(text)
     }
 }
-

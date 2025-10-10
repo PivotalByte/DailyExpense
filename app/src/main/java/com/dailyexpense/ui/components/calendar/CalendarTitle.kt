@@ -34,7 +34,6 @@ fun CalendarTitle(
     goToPrevious: () -> Unit,
     goToNext: () -> Unit,
 ) {
-
     val todayYearMonth = YearMonth(today.year, today.month.number)
     val isNextEnabled = currentMonth < todayYearMonth
 
@@ -81,7 +80,6 @@ private fun CalendarNavigationIcon(
             onClick = onClick
         ),
 ) {
-
     Icon(
         painter = painter,
         contentDescription = contentDescription,

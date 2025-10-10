@@ -68,7 +68,6 @@ fun Modifier.clickable(
     )
 }
 
-
 @Composable
 fun NavigationIcon(onBackClick: () -> Unit) {
     Box(
@@ -77,7 +76,10 @@ fun NavigationIcon(onBackClick: () -> Unit) {
             .aspectRatio(1f)
             .padding(8.dp)
             .clip(shape = CircleShape)
-            .clickable(role = Role.Button, onClick = onBackClick),
+            .clickable(
+                role = Role.Button,
+                onClick = onBackClick
+            ),
     ) {
         Icon(
             tint = Color.White,
@@ -245,7 +247,9 @@ private fun YearCalendarLayoutInfo.firstMostVisibleYear(viewportPercent: Float =
 suspend fun LazyListState.animateScrollAndCenterItem(index: Int) {
     suspend fun animateScrollIfVisible(): Boolean {
         val layoutInfo = layoutInfo
-        val containerSize = layoutInfo.viewportSize.width - layoutInfo.beforeContentPadding - layoutInfo.afterContentPadding
+        val containerSize = layoutInfo.viewportSize.width -
+                layoutInfo.beforeContentPadding -
+                layoutInfo.afterContentPadding
         val target = layoutInfo.visibleItemsInfo.firstOrNull { it.index == index } ?: return false
         val targetOffset = containerSize / 2f - target.size / 2f
         animateScrollBy(target.offset - targetOffset)
@@ -259,7 +263,10 @@ suspend fun LazyListState.animateScrollAndCenterItem(index: Int) {
                 (index - visibleItemsInfo.size + 1)
             } else {
                 index
-            }.coerceIn(0, layoutInfo.totalItemsCount),
+            }.coerceIn(
+                0,
+                layoutInfo.totalItemsCount
+            ),
         )
         animateScrollIfVisible()
     }

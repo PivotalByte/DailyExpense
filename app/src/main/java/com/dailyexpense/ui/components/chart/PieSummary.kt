@@ -85,11 +85,14 @@ fun PieSummary(
                 contentAlignment = Alignment.Center
             ) {
                 val total = summary.sumOf { it.totalAmount }
-                val centerText = if (summary.isNotEmpty())
+                val centerText = if (summary.isNotEmpty()) {
                     stringResource(
                         id = R.string.label_rupee_sign_with_value,
                         total.toIndianCurrencyFormat()
-                    ) else stringResource(id = R.string.no_data)
+                    )
+                } else {
+                    stringResource(id = R.string.no_data)
+                }
                 val typeface = rememberTypeface(fontFamily = MaterialTheme.typography.bodyLarge.fontFamily)
 
                 if (summary.isNotEmpty()) {
@@ -151,10 +154,11 @@ fun PieSummary(
                         targetValue = if (selectedCategory == item.categoryName) 20.dp else 16.dp,
                         animationSpec = tween(durationMillis = 300) // You can adjust the duration
                     )
-                    val targetFontSize = if (selectedCategory == item.categoryName)
+                    val targetFontSize = if (selectedCategory == item.categoryName) {
                         MaterialTheme.typography.bodyLarge.fontSize.value
-                    else
+                    } else {
                         MaterialTheme.typography.bodyMedium.fontSize.value
+                    }
 
                     val fontSize by animateFloatAsState(
                         targetValue = targetFontSize,
@@ -178,7 +182,11 @@ fun PieSummary(
 
                         Text(
                             text = item.categoryName,
-                            style = if (selectedCategory == item.categoryName) MaterialTheme.typography.bodyLarge else MaterialTheme.typography.bodyMedium,
+                            style = if (selectedCategory == item.categoryName) {
+                                MaterialTheme.typography.bodyLarge
+                            } else {
+                                MaterialTheme.typography.bodyMedium
+                            },
                             modifier = Modifier.weight(weight = 1f)
                         )
 

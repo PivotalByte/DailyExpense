@@ -16,7 +16,7 @@ enum class TransactionCategory {
 }
 
 fun TransactionCategory.getTransactionCategoryAsString(context: Context): String {
-    return when(this){
+    return when (this) {
         TransactionCategory.CASH -> context.getString(R.string.label_by_cash)
         TransactionCategory.CASH_WITHDRAWAL -> context.getString(R.string.label_cash_withdrawn)
         TransactionCategory.DEBIT_CARD -> context.getString(R.string.label_by_debit_card)

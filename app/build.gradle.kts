@@ -10,6 +10,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
     alias(libs.plugins.google.service)
+    alias(libs.plugins.detekt)
 }
 
 android {
@@ -60,6 +61,14 @@ android {
     room {
         schemaDirectory("$projectDir/schemas")
     }
+}
+
+detekt {
+    toolVersion = "1.23.5"
+    config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
+    buildUponDefaultConfig = true // starts with the default detekt config
+    allRules = false // enable if you want all rules
+    parallel = true
 }
 
 dependencies {
@@ -138,5 +147,8 @@ dependencies {
     // Google service
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
+
+    //detekt
+    detektPlugins(libs.detekt.formatting)
 
 }

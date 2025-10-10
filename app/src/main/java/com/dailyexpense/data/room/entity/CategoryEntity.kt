@@ -12,7 +12,7 @@ data class CategoryEntity(
     val transactionType: TransactionType,
     val colorCode: String,
     val iconResName: String
-){
+) {
     constructor(name: String, transactionType: TransactionType, colorCode: String, iconResName: String) : this(
         categoryId = 0,
         name = name,

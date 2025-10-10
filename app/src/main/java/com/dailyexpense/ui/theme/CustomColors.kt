@@ -8,8 +8,8 @@ data class CustomColors(
     val bottomBarBg: Color,
     val appBg: Color,
     val cardBg: Color,
-    val dashboardCardTitleBg : Color,
-    val searchBoxBorder : Color
+    val dashboardCardTitleBg: Color,
+    val searchBoxBorder: Color
 )
 
 val LocalCustomColors = staticCompositionLocalOf {

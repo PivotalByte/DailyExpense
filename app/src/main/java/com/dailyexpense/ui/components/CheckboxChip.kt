@@ -46,7 +46,7 @@ fun CheckboxChip(
             isSelected = isSelected,
             selectedColor = LocalCustomColors.current.primaryColor,
             unselectedColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            tickColor = Color.White
+            tickColor = tickColor
         )
 
         Text(
@@ -56,7 +56,6 @@ fun CheckboxChip(
         )
     }
 }
-
 
 @Preview(name = "Unselected Chip - Light", showBackground = true)
 @Composable

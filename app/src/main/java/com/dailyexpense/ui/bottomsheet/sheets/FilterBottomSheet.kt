@@ -179,9 +179,7 @@ fun FilterBottomSheet(
             closeSheet.invoke()
         }
     )
-
 }
-
 
 @OptIn(ExperimentalTime::class)
 @Composable
@@ -196,7 +194,6 @@ fun FilterBottomSheetContent(
     transactionCategoryChipData: List<TransactionCategoryChipData>,
     tagChipData: List<ChipData>,
 ) {
-
     val currentMonth = remember {
         localFilterState.startDate?.toLocalDate()?.let { YearMonth(it.year, it.month) }
             ?: YearMonth.now()
@@ -231,7 +228,7 @@ fun FilterBottomSheetContent(
     var showCalendar by remember {
         mutableStateOf(
             value = localFilterState.selectedDuration == Duration.Custom &&
-                    localFilterState.startDate != null && localFilterState.endDate != null
+                localFilterState.startDate != null && localFilterState.endDate != null
         )
     }
 
@@ -293,12 +290,16 @@ fun FilterBottomSheetContent(
                                 currentMonth = visibleMonth.yearMonth,
                                 goToPrevious = {
                                     coroutineScope.launch {
-                                        state.animateScrollToMonth(month = state.firstVisibleMonth.yearMonth.minusMonth())
+                                        state.animateScrollToMonth(
+                                            month = state.firstVisibleMonth.yearMonth.minusMonth()
+                                        )
                                     }
                                 },
                                 goToNext = {
                                     coroutineScope.launch {
-                                        state.animateScrollToMonth(month = state.firstVisibleMonth.yearMonth.plusMonth())
+                                        state.animateScrollToMonth(
+                                            month = state.firstVisibleMonth.yearMonth.plusMonth()
+                                        )
                                     }
                                 },
                             )
@@ -351,7 +352,6 @@ fun FilterBottomSheetContent(
                                         localFilterState.selectedCategories + category.id
                                     }
                                     onFilterChanged(localFilterState.copy(selectedCategories = newCategories))
-
                                 }
                             )
                         }
@@ -531,7 +531,6 @@ fun FilterBottomSheetContent(
     }
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(name = "Filter Bottom Sheet - Light")
 @Composable
@@ -599,4 +598,3 @@ fun PreviewFilterDarkBottomSheet() {
         )
     }
 }
-

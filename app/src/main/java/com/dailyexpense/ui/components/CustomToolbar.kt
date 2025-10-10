@@ -19,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.dailyexpense.ui.theme.LocalCustomColors
 
@@ -32,7 +31,6 @@ import com.dailyexpense.ui.theme.LocalCustomColors
  * @param onBack invoked when back icon is pressed
  * @param actions optional trailing action slot
  * @param centerTitle whether title should be center aligned (true) or start aligned (false)
- * @param elevation toolbar elevation
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,7 +42,6 @@ fun CustomToolbar(
     onBack: () -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {},
     centerTitle: Boolean = false,
-    elevation: Dp = 4.dp,
     backIcon: ImageVector = Icons.AutoMirrored.Filled.ArrowBack
 ) {
     val colors = TopAppBarDefaults.topAppBarColors(

@@ -73,13 +73,12 @@ fun MainScreen(navController: NavHostController) {
                 .padding(paddingValues = padding),
             contentAlignment = Alignment.TopStart
         ) {
-            when(selectedTab){
-                MainTab.Dashboard -> DashboardScreen(navController)
-                MainTab.Transactions -> TransactionListScreen(navController)
-                MainTab.Analytics -> AnalyticsScreen(navController)
+            when (selectedTab) {
+                MainTab.Dashboard -> DashboardScreen()
+                MainTab.Transactions -> TransactionListScreen()
+                MainTab.Analytics -> AnalyticsScreen()
                 MainTab.Account -> Text(text = "Current tab: ${stringResource(id = selectedTab.labelRes)}")
             }
-
         }
     }
 }

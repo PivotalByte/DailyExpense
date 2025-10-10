@@ -32,7 +32,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import com.dailyexpense.R
 import com.dailyexpense.data.enums.getTransactionCategoryAsString
 import com.dailyexpense.data.fakeDurationAnalyticsChipData
@@ -70,10 +69,8 @@ import kotlin.time.ExperimentalTime
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AnalyticsScreen(
-    navController: NavHostController,
     analyticsViewModel: AnalyticsViewModel = hiltViewModel(),
 ) {
-
     val durationState by analyticsViewModel.duration.collectAsState()
     val startDate by analyticsViewModel.startDate.collectAsState()
     val endDate by analyticsViewModel.endDate.collectAsState()
@@ -91,7 +88,6 @@ fun AnalyticsScreen(
         Duration.ThisYear to stringResource(id = R.string.label_year),
         Duration.Custom to stringResource(id = R.string.label_custom),
     )
-
 
     val bottomSheetController = rememberBottomSheetController()
     BottomSheetHost(controller = bottomSheetController) {
@@ -112,7 +108,6 @@ fun AnalyticsScreen(
             bottomSheetController = bottomSheetController
         )
     }
-
 }
 
 @Composable
@@ -132,14 +127,12 @@ fun AnalyticsScreenContent(
     stats: TransactionStats,
     bottomSheetController: BottomSheetController,
 ) {
-
     var selectedExpenseCategory by remember { mutableStateOf<String?>(value = null) }
     var selectedIncomeCategory by remember { mutableStateOf<String?>(value = null) }
 
     val today = remember { LocalDate.now() }
     var customStartDate by remember { mutableStateOf(value = today.minusDays(value = 2)) }
     var customEndDate by remember { mutableStateOf(value = today) }
-
 
     LazyColumn(
         modifier = Modifier
@@ -286,7 +279,6 @@ fun AnalyticsScreenContent(
                     }
                 )
             }
-
         }
         item {
             Text(
@@ -509,4 +501,3 @@ fun PreviewAnalyticsScreen() {
         )
     }
 }
-
