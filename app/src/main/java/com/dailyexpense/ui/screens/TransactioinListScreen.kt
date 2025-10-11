@@ -55,7 +55,6 @@ fun TransactionListScreen(
 
     val listState = rememberLazyListState()
     var searchQuery by remember { mutableStateOf(value = "") }
-
     val bottomSheetController = rememberCustomBottomSheetController()
 
     BottomSheetHost(controller = bottomSheetController) {
