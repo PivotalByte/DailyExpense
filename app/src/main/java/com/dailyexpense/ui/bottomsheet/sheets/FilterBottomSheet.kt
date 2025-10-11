@@ -320,7 +320,6 @@ fun FilterBottomSheetContent(
                     }
                 }
             }
-
             item {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
@@ -357,7 +356,6 @@ fun FilterBottomSheetContent(
                     }
                 }
             }
-
             item {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
@@ -397,7 +395,6 @@ fun FilterBottomSheetContent(
                     }
                 }
             }
-
             item {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
@@ -439,7 +436,6 @@ fun FilterBottomSheetContent(
                     }
                 }
             }
-
             item {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
