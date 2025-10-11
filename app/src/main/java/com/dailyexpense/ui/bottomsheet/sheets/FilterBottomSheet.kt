@@ -268,7 +268,6 @@ fun FilterBottomSheetContent(
                             )
                         }
                     }
-
                     AnimatedVisibility(
                         visible = showCalendar,
                         enter = expandVertically() + fadeIn(),
