@@ -78,10 +78,9 @@ fun CategoryCard(category: CategoryEntity, onCategoryClick: (CategoryEntity) -> 
 
 @Preview
 @Composable
-fun PreviewCategoryCard(){
+fun PreviewCategoryCard() {
     val category =
         CategoryEntity("Groceries", TransactionType.EXPENSE, "ic_category_groceries", "#FF0000")
 
     CategoryCard(category) {}
 }
-

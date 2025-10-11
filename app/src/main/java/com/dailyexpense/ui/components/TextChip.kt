@@ -50,7 +50,6 @@ fun TextChip(
             color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
-
 }
 
 @Preview(name = "Unselected Chip - Light", showBackground = true)

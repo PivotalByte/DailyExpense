@@ -79,7 +79,6 @@ fun AmountCard(
                             .padding(end = 5.dp)
                             .align(Alignment.CenterEnd),
                     ) {
-
                         val builder = rememberBalloonBuilder {
                             setArrowSize(10)
                             setArrowPosition(0.5f)

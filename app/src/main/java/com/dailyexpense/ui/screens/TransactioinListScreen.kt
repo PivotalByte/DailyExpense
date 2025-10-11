@@ -20,7 +20,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.dailyexpense.data.models.Duration
@@ -28,7 +27,7 @@ import com.dailyexpense.presentation.FilterViewModel
 import com.dailyexpense.presentation.SortViewModel
 import com.dailyexpense.presentation.TransactionListViewModel
 import com.dailyexpense.ui.bottomsheet.BottomSheetHost
-import com.dailyexpense.ui.bottomsheet.factory.rememberBottomSheetController
+import com.dailyexpense.ui.bottomsheet.factory.rememberCustomBottomSheetController
 import com.dailyexpense.ui.bottomsheet.sheets.FilterBottomSheet
 import com.dailyexpense.ui.bottomsheet.sheets.SortBottomSheet
 import com.dailyexpense.ui.components.ErrorItem
@@ -39,12 +38,10 @@ import com.dailyexpense.ui.components.TransactionRow
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TransactionListScreen(
-    navController: NavHostController,
     viewModel: TransactionListViewModel = hiltViewModel(),
     filterViewModel: FilterViewModel = hiltViewModel(),
     sortViewModel: SortViewModel = hiltViewModel()
 ) {
-
     val filterState = filterViewModel.filterState
     val sortState = sortViewModel.sortState
     val filter = filterState.collectAsState().value
@@ -58,9 +55,7 @@ fun TransactionListScreen(
 
     val listState = rememberLazyListState()
     var searchQuery by remember { mutableStateOf(value = "") }
-
-    val bottomSheetController = rememberBottomSheetController()
-
+    val bottomSheetController = rememberCustomBottomSheetController()
 
     BottomSheetHost(controller = bottomSheetController) {
         Column(modifier = Modifier.fillMaxSize()) {
@@ -92,10 +87,10 @@ fun TransactionListScreen(
                         }
                     },
                     isFilterApplied = filter.selectedDuration != Duration.Today ||
-                            filter.selectedCategories.isNotEmpty() ||
-                            filter.selectedTransactionTypes.isNotEmpty() ||
-                            filter.selectedTransactionCategories.isNotEmpty() ||
-                            filter.selectedTags.isNotEmpty()
+                        filter.selectedCategories.isNotEmpty() ||
+                        filter.selectedTransactionTypes.isNotEmpty() ||
+                        filter.selectedTransactionCategories.isNotEmpty() ||
+                        filter.selectedTags.isNotEmpty()
                 )
             }
 
@@ -131,7 +126,8 @@ fun TransactionListScreen(
                             item {
                                 ErrorItem(
                                     message = e.error.message ?: "Error",
-                                    onRetry = { retry() })
+                                    onRetry = { retry() }
+                                )
                             }
                         }
                     }

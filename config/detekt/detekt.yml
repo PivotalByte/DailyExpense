@@ -1,0 +1,164 @@
+# Detekt configuration optimized for Jetpack Compose projects
+
+build:
+  maxIssues: 0
+  excludeCorrectable: false
+  weights: { }
+
+config:
+  validation: true
+  warningsAsErrors: false
+  checkExhaustiveness: false
+  excludes: ''
+
+processors:
+  active: true
+  exclude:
+    - 'DetektProgressListener'
+
+console-reports:
+  active: true
+  exclude:
+    - 'ProjectStatisticsReport'
+    - 'ComplexityReport'
+
+output-reports:
+  active: true
+  exclude: [ ]
+
+comments:
+  active: true
+  AbsentOrWrongFileLicense: { active: false }
+  CommentOverPrivateFunction: { active: false }
+  CommentOverPrivateProperty: { active: false }
+  DeprecatedBlockTag: { active: false }
+  EndOfSentenceFormat: { active: false }
+  KDocReferencesNonPublicProperty: { active: false }
+  OutdatedDocumentation: { active: false }
+  UndocumentedPublicClass: { active: false }
+  UndocumentedPublicFunction: { active: false }
+  UndocumentedPublicProperty: { active: false }
+
+complexity:
+  active: true
+  LargeClass:
+    active: false
+  LongMethod:
+    active: false
+  TooManyFunctions:
+    active: false
+  CyclomaticComplexMethod:
+    active: true
+    threshold: 25
+  NestedBlockDepth:
+    active: true
+    threshold: 4
+  LongParameterList:
+    active: true
+    functionThreshold: 15
+    constructorThreshold: 15
+    ignoreAnnotatedParameter:
+      - 'Composable'
+
+
+
+coroutines:
+  active: true
+  GlobalCoroutineUsage: { active: false }
+  InjectDispatcher:
+    active: true
+    dispatcherNames: [ 'IO', 'Default', 'Unconfined' ]
+  RedundantSuspendModifier: { active: true }
+  SleepInsteadOfDelay: { active: true }
+  SuspendFunWithFlowReturnType: { active: true }
+
+empty-blocks:
+  active: true
+  EmptyCatchBlock:
+    active: true
+    allowedExceptionNameRegex: '_|(ignore|expected).*'
+  EmptyClassBlock: { active: true }
+  EmptyFunctionBlock: { active: true }
+  EmptyKtFile: { active: true }
+
+exceptions:
+  active: true
+  ExceptionRaisedInUnexpectedLocation: { active: true }
+  InstanceOfCheckForException: { active: true }
+  PrintStackTrace: { active: true }
+  RethrowCaughtException: { active: true }
+  ThrowingExceptionsWithoutMessageOrCause: { active: true }
+  TooGenericExceptionCaught: { active: true }
+  TooGenericExceptionThrown: { active: true }
+
+naming:
+  active: true
+  FunctionNaming:
+    active: true
+    functionPattern: '^[a-z][A-Za-z0-9]*$'   # default for normal functions
+    ignoreAnnotated:
+      - 'Composable'
+    excludes:
+      - '**/test/**'
+      - '**/androidTest/**'
+
+  ClassNaming:
+    active: true
+    classPattern: '[A-Z][a-zA-Z0-9]*'
+  EnumNaming:
+    active: true
+    enumEntryPattern: '[A-Z][_a-zA-Z0-9]*'
+  VariableNaming:
+    active: true
+    variablePattern: '[a-z][A-Za-z0-9]*'
+    privateVariablePattern: '(_)?[a-z][A-Za-z0-9]*'
+
+
+performance:
+  active: true
+  ArrayPrimitive: { active: true }
+  ForEachOnRange: { active: true }
+  SpreadOperator: { active: true }
+  UnnecessaryTemporaryInstantiation: { active: true }
+
+potential-bugs:
+  active: true
+  UnsafeCallOnNullableType: { active: true }
+  UnnecessaryNotNullOperator: { active: true }
+  LateinitUsage: { active: false }
+  EqualsAlwaysReturnsTrueOrFalse: { active: true }
+  ImplicitDefaultLocale: { active: true }
+
+style:
+  active: true
+  ForbiddenComment:
+    active: true
+    comments:
+      - value: 'FIXME:'
+      - value: 'STOPSHIP:'
+      - value: 'TODO:'
+  FunctionOnlyReturningConstant: { active: false }
+  UnusedPrivateMember: { active: false }
+  UnusedPrivateProperty: { active: false }
+  ModifierOrder:
+    active: true
+  MagicNumber: { active: false }
+  ReturnCount: { active: false }
+  UnusedImports: { active: true }
+
+
+
+formatting:
+  active: true
+  autoCorrect: true
+  ChainWrapping: { active: true }
+  ArgumentListWrapping: { active: true, indentSize: 4 }
+  Indentation: { active: true, indentSize: 4 }
+  ImportOrdering: { active: false, autoCorrect: true, layout: '*,java.**,javax.**,kotlin.**,androidx.**,compose.**,^' }
+  NoUnusedImports: { active: true }
+  ModifierOrdering: { active: true }
+  MaxLineLength: { active: true, maxLineLength: 400 }
+  UnnecessaryParenthesesBeforeTrailingLambda: { active: true }
+  NoWildcardImports: { active: true }
+  MaximumLineLength: { active: true, maxLineLength: 400}
+

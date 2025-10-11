@@ -40,7 +40,6 @@ fun NewTransactionScreen(
     navController: NavHostController,
     newTransactionViewModel: NewTransactionViewModel = hiltViewModel()
 ) {
-
     val transactionTypeState by newTransactionViewModel.transactionTypeState.collectAsState()
 
     val transactionTypeChipData = listOf(
@@ -66,8 +65,6 @@ fun NewTransactionScreen(
             newTransactionViewModel.updateTransactionType(newType)
         }
     )
-
-
 }
 
 @Composable
@@ -84,7 +81,8 @@ fun NewTransactionScreenContent(
         CustomToolbar(
             title = "New Transaction",
             showBack = true,
-            onBack = { navController.popBackStack() })
+            onBack = { navController.popBackStack() }
+        )
         LazyColumn(
             modifier = Modifier.weight(1f),
             contentPadding = PaddingValues(
@@ -123,10 +121,9 @@ fun NewTransactionScreenContent(
                             color = Color.LightGray,
                             shape = RoundedCornerShape(12.dp)
                         )
-                        .clip(RoundedCornerShape(12.dp)) 
+                        .clip(RoundedCornerShape(12.dp))
                         .padding(16.dp)
-                )
-                {
+                ) {
                     Text(
                         text = "Notes",
                         style = MaterialTheme.typography.bodySmall,

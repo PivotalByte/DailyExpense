@@ -49,6 +49,4 @@ class TransactionListViewModel @Inject constructor(
     fun updateSearchQuery(newQuery: String) {
         searchQuery.value = newQuery
     }
-
-
 }

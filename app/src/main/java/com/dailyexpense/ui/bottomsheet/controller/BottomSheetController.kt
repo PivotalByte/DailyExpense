@@ -8,8 +8,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-
-class BottomSheetController @OptIn(ExperimentalMaterial3Api::class) constructor(
+@OptIn(ExperimentalMaterial3Api::class)
+class BottomSheetController(
     private val scope: CoroutineScope,
     val sheetState: SheetState
 ) {

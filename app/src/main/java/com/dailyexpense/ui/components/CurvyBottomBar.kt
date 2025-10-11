@@ -37,7 +37,6 @@ import androidx.compose.ui.unit.dp
 import com.dailyexpense.data.models.MainTab
 import com.dailyexpense.ui.theme.LocalCustomColors
 
-
 @Composable
 fun CurvyBottomBar(
     selectedIndex: MainTab,
@@ -45,7 +44,6 @@ fun CurvyBottomBar(
     modifier: Modifier = Modifier,
     showLabelsWhenSelected: Boolean = true,
 ) {
-
     val navItems = listOf(
         MainTab.Dashboard,
         MainTab.Transactions,
@@ -98,8 +96,15 @@ fun CurvyBottomBar(
                             AnimatedContent(
                                 targetState = selected,
                                 transitionSpec = {
-                                    fadeIn(animationSpec = spring(stiffness = Spring.StiffnessMediumLow))
-                                        .togetherWith(exit = fadeOut(animationSpec = spring(stiffness = Spring.StiffnessMediumLow)))
+                                    fadeIn(
+                                        animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
+                                    ).togetherWith(
+                                        exit = fadeOut(
+                                            animationSpec = spring(
+                                                stiffness = Spring.StiffnessMediumLow
+                                            )
+                                        )
+                                    )
                                 },
                                 label = "bottomBarLabel"
                             ) { isSelected ->

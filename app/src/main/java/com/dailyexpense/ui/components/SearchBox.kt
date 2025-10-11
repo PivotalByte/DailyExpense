@@ -33,7 +33,6 @@ import androidx.compose.ui.unit.sp
 import com.dailyexpense.R
 import com.dailyexpense.ui.theme.LocalCustomColors
 
-
 @Composable
 fun SearchBox(
     modifier: Modifier = Modifier,
@@ -152,8 +151,8 @@ fun PreviewSearchBox() {
         query = searchQuery,
         onQueryChanged = { searchQuery = it },
         onClearClicked = { searchQuery = "" },
-        onFilterClicked = {  },
-        onSortClicked = {  },
+        onFilterClicked = { },
+        onSortClicked = { },
         isFilterApplied = true
     )
 }

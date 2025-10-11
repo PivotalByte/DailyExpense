@@ -41,7 +41,7 @@ fun Day(
                 continuousSelectionColor = LocalCustomColors.current.primaryColor.copy(alpha = 0.2f),
             ) {
                 textColor = it
-              },
+            },
         contentAlignment = Alignment.Center
     ) {
         Text(

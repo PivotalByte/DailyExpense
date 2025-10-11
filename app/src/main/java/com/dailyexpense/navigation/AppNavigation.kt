@@ -8,10 +8,10 @@ import com.dailyexpense.ui.screens.MainScreen
 import com.dailyexpense.ui.screens.NewTransactionScreen
 
 @Composable
-fun AppNavigation(navController: NavHostController){
-
+fun AppNavigation(navController: NavHostController) {
     NavHost(
-        navController = navController, startDestination = Route.Main.route
+        navController = navController,
+        startDestination = Route.Main.route
     ) {
         composable(Route.Main.route) {
             MainScreen(navController)
@@ -20,5 +20,4 @@ fun AppNavigation(navController: NavHostController){
             NewTransactionScreen(navController)
         }
     }
-
 }

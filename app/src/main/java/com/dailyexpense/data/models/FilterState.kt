@@ -20,8 +20,16 @@ data class FilterState(
 
 @OptIn(ExperimentalTime::class)
 fun FilterState.isSameDay(): Boolean {
-    val start = startDate?.let { Instant.fromEpochMilliseconds(it).toLocalDateTime(TimeZone.currentSystemDefault()).date }
-    val end = endDate?.let { Instant.fromEpochMilliseconds(it).toLocalDateTime(TimeZone.currentSystemDefault()).date }
+    val start = startDate?.let {
+        Instant.fromEpochMilliseconds(it)
+            .toLocalDateTime(TimeZone.currentSystemDefault())
+            .date
+    }
+    val end = endDate?.let {
+        Instant.fromEpochMilliseconds(it)
+            .toLocalDateTime(TimeZone.currentSystemDefault())
+            .date
+    }
 
     return start != null && end != null && start == end
 }

@@ -47,7 +47,6 @@ fun CalendarRangeSelector(
             .height(height = 40.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-
         if (duration != Duration.Custom) {
             CalendarNavigationIcon(
                 painter = painterResource(id = R.drawable.ic_left_square),

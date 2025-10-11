@@ -8,7 +8,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 import com.dailyexpense.navigation.AppNavigation
-import com.dailyexpense.ui.screens.MainScreen
 import com.dailyexpense.ui.theme.DailyExpenseTheme
 import com.google.android.gms.ads.MobileAds
 import dagger.hilt.android.AndroidEntryPoint

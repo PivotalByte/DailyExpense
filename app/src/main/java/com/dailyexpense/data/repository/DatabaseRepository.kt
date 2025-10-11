@@ -22,7 +22,6 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
-
 @Singleton
 class DatabaseRepository @Inject constructor(
     private val transactionDao: TransactionDao,
@@ -44,7 +43,6 @@ class DatabaseRepository @Inject constructor(
         sortState: SortState,
         query: String
     ): Pager<Int, TransactionEntity> {
-
         // Determine sort field
         val sortField = when (sortState.sortOption) {
             SortOption.DATE -> "DATE"
@@ -78,7 +76,6 @@ class DatabaseRepository @Inject constructor(
             }
         )
     }
-
 
     fun getCategoriesByType(type: TransactionType): Flow<List<CategoryEntity>> =
         categoryDao.getCategoriesByType(type)
@@ -148,6 +145,4 @@ class DatabaseRepository @Inject constructor(
 
     fun getDailyTransactionSummary(startDate: Long, endDate: Long): Flow<List<DailyTransactionSummary>> =
         transactionDao.getDailyTransactionSummary(startDate = startDate, endDate = endDate)
-
-
 }

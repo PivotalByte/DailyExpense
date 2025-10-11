@@ -79,8 +79,6 @@ fun CalendarPickerBottomSheet(
             )
         )
     }
-
-
     CalendarPickerBottomSheetContent(
         today = today,
         visibleMonth = visibleMonth,
@@ -103,7 +101,6 @@ fun CalendarPickerBottomSheet(
     )
 }
 
-
 @Composable
 fun CalendarPickerBottomSheetContent(
     today: LocalDate,
@@ -115,8 +112,6 @@ fun CalendarPickerBottomSheetContent(
     onSelectionChanged: (DateSelection) -> Unit,
     selection: DateSelection
 ) {
-
-
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
         Column(verticalArrangement = Arrangement.spacedBy(space = 4.dp)) {
             CalendarTitle(

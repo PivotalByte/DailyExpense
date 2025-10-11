@@ -75,7 +75,7 @@ fun DailyExpenseTheme(
                 modifier = modifier
                     .fillMaxSize()
                     .background(color = LocalCustomColors.current.appBg),
-                ) {
+            ) {
                 content()
             }
         }

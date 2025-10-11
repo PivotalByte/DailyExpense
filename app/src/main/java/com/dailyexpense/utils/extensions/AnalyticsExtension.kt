@@ -9,6 +9,6 @@ fun Duration.getDateRange(): Pair<Long, Long> {
         Duration.ThisWeek -> DateUtil.getThisWeekRange()
         Duration.ThisMonth -> DateUtil.getThisMonthRange()
         Duration.ThisYear -> DateUtil.getThisYearRange()
-        Duration.Custom -> throw IllegalStateException("Custom range must be set manually")
+        Duration.Custom -> error("Custom range must be set manually")
     }
 }

@@ -41,7 +41,6 @@ class DashboardViewModel @Inject constructor(
         repository.getTotalIncome(startDate, endDate)
             .stateIn(viewModelScope, started = SharingStarted.Lazily, initialValue = 0.0)
 
-
     fun addTransactions(transactionEntity: TransactionEntity) {
         viewModelScope.launch {
             repository.insertTransaction(transactionEntity)
@@ -55,5 +54,4 @@ class DashboardViewModel @Inject constructor(
     }
 
     fun getCategoriesByType(type: TransactionType) = repository.getCategoriesByType(type)
-
 }
