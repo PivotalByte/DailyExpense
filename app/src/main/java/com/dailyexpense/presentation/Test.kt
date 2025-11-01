@@ -1,6 +1,5 @@
 package com.dailyexpense.presentation
 
 class Test {
-
-    val test = "Hello"
+    val testDemo = "Hello"
 }

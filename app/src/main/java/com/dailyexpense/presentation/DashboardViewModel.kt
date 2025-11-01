@@ -54,6 +54,4 @@ class DashboardViewModel @Inject constructor(
     }
 
     fun getCategoriesByType(type: TransactionType) = repository.getCategoriesByType(type)
-
-
 }
