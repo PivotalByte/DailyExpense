@@ -2,6 +2,8 @@ package com.dailyexpense.di
 
 import android.content.Context
 import androidx.room.Room
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.dailyexpense.data.room.dao.AccountDao
 import com.dailyexpense.data.room.dao.CategoryDao
 import com.dailyexpense.data.room.dao.TagDao
@@ -17,6 +19,21 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
+
+    private val MIGRATION_1_2 = object : Migration(1, 2) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            // Update any transactions with legacy categories (SALARY, BUSINESS, INVESTMENTS)
+            // to use CASH as the default category
+            db.execSQL(
+                """
+                UPDATE DE_transaction
+                SET transactionCategory = 'CASH'
+                WHERE transactionCategory IN ('SALARY', 'BUSINESS', 'INVESTMENTS')
+                """.trimIndent()
+            )
+        }
+    }
+
     @Provides
     @Singleton
     fun provideDatabase(
@@ -28,6 +45,7 @@ object AppModule {
             "daily_expense_db"
         )
             .createFromAsset("database/daily_expense_v1.db")
+            .addMigrations(MIGRATION_1_2)
             .build()
     }
 

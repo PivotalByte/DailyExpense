@@ -126,18 +126,7 @@ val fakeTransactionCategoryChipData = listOf(
         type = TransactionCategory.UPI,
         label = TransactionCategory.UPI.name.toReadableFormat().uppercase()
     ),
-    TransactionCategoryChipData(
-        type = TransactionCategory.SALARY,
-        label = TransactionCategory.SALARY.name.toReadableFormat()
-    ),
-    TransactionCategoryChipData(
-        type = TransactionCategory.BUSINESS,
-        label = TransactionCategory.BUSINESS.name.toReadableFormat()
-    ),
-    TransactionCategoryChipData(
-        type = TransactionCategory.INVESTMENTS,
-        label = TransactionCategory.INVESTMENTS.name.toReadableFormat()
-    ),
+
     TransactionCategoryChipData(
         type = TransactionCategory.BANK_TRANSFER,
         label = TransactionCategory.BANK_TRANSFER.name.toReadableFormat()

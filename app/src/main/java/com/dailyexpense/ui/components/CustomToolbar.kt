@@ -2,7 +2,9 @@ package com.dailyexpense.ui.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -19,7 +21,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.dailyexpense.ui.theme.LocalCustomColors
 
 /**
@@ -54,14 +58,20 @@ fun CustomToolbar(
                 if (subtitle.isNullOrBlank()) {
                     Text(
                         text = title,
-                        style = MaterialTheme.typography.titleLarge,
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.SemiBold
+                        ),
                         color = MaterialTheme.colorScheme.onSurface
                     )
                 } else {
                     Column {
                         Text(
                             text = title,
-                            style = MaterialTheme.typography.titleLarge,
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.SemiBold
+                            ),
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
@@ -88,7 +98,8 @@ fun CustomToolbar(
             },
             actions = actions,
             colors = colors,
-            modifier = modifier,
+            modifier = modifier.height(56.dp),
+            windowInsets = WindowInsets(0.dp)
         )
     } else {
         TopAppBar(
@@ -96,14 +107,20 @@ fun CustomToolbar(
                 if (subtitle.isNullOrBlank()) {
                     Text(
                         text = title,
-                        style = MaterialTheme.typography.titleMedium,
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.SemiBold
+                        ),
                         color = MaterialTheme.colorScheme.onSurface
                     )
                 } else {
                     Column {
                         Text(
                             text = title,
-                            style = MaterialTheme.typography.titleMedium,
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.SemiBold
+                            ),
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
@@ -130,7 +147,8 @@ fun CustomToolbar(
             },
             actions = actions,
             colors = colors,
-            modifier = modifier.fillMaxWidth().padding(horizontal = 0.dp)
+            modifier = modifier.fillMaxWidth().height(56.dp).padding(horizontal = 0.dp),
+            windowInsets = WindowInsets(0.dp)
         )
     }
 }

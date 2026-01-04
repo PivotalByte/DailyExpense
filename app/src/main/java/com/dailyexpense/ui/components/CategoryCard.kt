@@ -2,14 +2,20 @@ package com.dailyexpense.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,7 +33,11 @@ import com.dailyexpense.data.enums.TransactionType
 import com.dailyexpense.data.room.entity.CategoryEntity
 
 @Composable
-fun CategoryCard(category: CategoryEntity, onCategoryClick: (CategoryEntity) -> Unit) {
+fun CategoryCard(
+    category: CategoryEntity,
+    isSelected: Boolean = false,
+    onCategoryClick: (CategoryEntity) -> Unit
+) {
     val backgroundColor = try {
         Color(category.colorCode.toColorInt())
     } catch (_: IllegalArgumentException) {
@@ -45,32 +55,58 @@ fun CategoryCard(category: CategoryEntity, onCategoryClick: (CategoryEntity) -> 
         else -> R.drawable.ic_category_more
     }
 
-    Card(
-        modifier = Modifier
-            .aspectRatio(1f)
-            .clickable { onCategoryClick(category) }
+    Box(
+        modifier = Modifier.aspectRatio(1f)
     ) {
-        Column(
+        Card(
             modifier = Modifier
                 .fillMaxSize()
-                .background(backgroundColor),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+                .clickable { onCategoryClick(category) }
+                .then(
+                    if (isSelected) {
+                        Modifier.border(
+                            width = 3.dp,
+                            color = Color.White,
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                    } else {
+                        Modifier
+                    }
+                )
         ) {
-            Image(
-                painter = painterResource(id = iconResId),
-                contentDescription = category.name,
-                modifier = Modifier.size(35.dp)
-            )
-            Text(
-                modifier = Modifier.padding(all = 4.dp),
-                text = category.name,
-                style = MaterialTheme.typography.labelSmall.copy(
-                    fontSize = 10.sp,
-                    lineHeight = 10.sp
-                ),
-                color = Color.White,
-                textAlign = TextAlign.Center
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(backgroundColor),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(
+                    painter = painterResource(id = iconResId),
+                    contentDescription = category.name,
+                    modifier = Modifier.size(35.dp)
+                )
+                Text(
+                    modifier = Modifier.padding(all = 4.dp),
+                    text = category.name,
+                    style = MaterialTheme.typography.labelSmall.copy(
+                        fontSize = 10.sp,
+                        lineHeight = 10.sp
+                    ),
+                    color = Color.White,
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+        if (isSelected) {
+            Icon(
+                imageVector = Icons.Default.Check,
+                contentDescription = "Selected",
+                tint = Color.White,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(4.dp)
+                    .size(20.dp)
             )
         }
     }

@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.Flow
 interface TransactionDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertTransaction(transactionEntity: TransactionEntity)
+    suspend fun insertTransaction(transactionEntity: TransactionEntity): Long
 
     @Delete
     suspend fun deleteTransaction(transactionEntity: TransactionEntity)
@@ -100,8 +100,8 @@ interface TransactionDao {
 
     @Query(
         """
-        SELECT SUM(amount) FROM DE_transaction
-        WHERE transactionType = :transactionType 
+        SELECT ABS(SUM(amount)) FROM DE_transaction
+        WHERE transactionType = :transactionType
         AND date BETWEEN :startDate AND :endDate
     """
     )
@@ -113,7 +113,7 @@ interface TransactionDao {
 
     @Query(
         """
-    SELECT t.transactionCategory AS transactionCategory, SUM(t.amount) AS totalAmount
+    SELECT t.transactionCategory AS transactionCategory, ABS(SUM(t.amount)) AS totalAmount
     FROM DE_transaction t
     WHERE t.date BETWEEN :startDate AND :endDate AND t.transactionType = :transactionType
     GROUP BY t.transactionCategory
@@ -128,28 +128,28 @@ interface TransactionDao {
 
     @Query(
         """
-    SELECT 
+    SELECT
         COUNT(*) AS totalTransactions,
-        SUM(CASE WHEN transactionType = :expenseType THEN amount ELSE 0 END) AS totalExpense,
+        ABS(SUM(CASE WHEN transactionType = :expenseType THEN amount ELSE 0 END)) AS totalExpense,
         SUM(CASE WHEN transactionType = :incomeType THEN amount ELSE 0 END) AS totalIncome,
 
         -- average expense per day
-        (SUM(CASE WHEN transactionType = :expenseType THEN amount ELSE 0 END) / 
+        (ABS(SUM(CASE WHEN transactionType = :expenseType THEN amount ELSE 0 END)) /
          CAST(((:endDate - :startDate) / (1000*60*60*24) + 1) AS REAL)) AS avgExpensePerDay,
 
         -- average expense per transaction
-        (SUM(CASE WHEN transactionType = :expenseType THEN amount ELSE 0 END) / 
+        (ABS(SUM(CASE WHEN transactionType = :expenseType THEN amount ELSE 0 END)) /
          NULLIF(COUNT(CASE WHEN transactionType = :expenseType THEN 1 END), 0)) AS avgExpensePerTransaction,
 
         -- average income per day
-        (SUM(CASE WHEN transactionType = :incomeType THEN amount ELSE 0 END) / 
+        (SUM(CASE WHEN transactionType = :incomeType THEN amount ELSE 0 END) /
          CAST(((:endDate - :startDate) / (1000*60*60*24) + 1) AS REAL)) AS avgIncomePerDay,
 
         -- average income per transaction
-        (SUM(CASE WHEN transactionType = :incomeType THEN amount ELSE 0 END) / 
+        (SUM(CASE WHEN transactionType = :incomeType THEN amount ELSE 0 END) /
          NULLIF(COUNT(CASE WHEN transactionType = :incomeType THEN 1 END), 0)) AS avgIncomePerTransaction,
 
-        MAX(CASE WHEN transactionType = :expenseType THEN amount END) AS maxExpense,
+        ABS(MIN(CASE WHEN transactionType = :expenseType THEN amount END)) AS maxExpense,
         MAX(CASE WHEN transactionType = :incomeType THEN amount END) AS maxIncome
 
     FROM DE_transaction
@@ -165,10 +165,10 @@ interface TransactionDao {
 
     @Query(
         """
-    SELECT 
+    SELECT
         date,
         SUM(CASE WHEN transactionType = :incomeType THEN amount ELSE 0 END) AS totalIncome,
-        SUM(CASE WHEN transactionType = :expenseType THEN amount ELSE 0 END) AS totalExpense
+        ABS(SUM(CASE WHEN transactionType = :expenseType THEN amount ELSE 0 END)) AS totalExpense
     FROM DE_transaction
     WHERE date BETWEEN :startDate AND :endDate
     GROUP BY strftime('%Y-%m-%d', date / 1000, 'unixepoch')

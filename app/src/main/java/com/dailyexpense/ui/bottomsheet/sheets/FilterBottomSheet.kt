@@ -84,7 +84,6 @@ fun FilterBottomSheet(
     viewModel: FilterViewModel = hiltViewModel()
 ) {
     val filterState by viewModel.filterState.collectAsState()
-    var localFilterState by remember { mutableStateOf(filterState) }
 
     val durationChipData = listOf(
         Duration.Today to stringResource(R.string.label_today),
@@ -135,18 +134,6 @@ fun FilterBottomSheet(
             label = TransactionCategory.UPI.name.toReadableFormat().uppercase()
         ),
         TransactionCategoryChipData(
-            type = TransactionCategory.SALARY,
-            label = TransactionCategory.SALARY.name.toReadableFormat()
-        ),
-        TransactionCategoryChipData(
-            type = TransactionCategory.BUSINESS,
-            label = TransactionCategory.BUSINESS.name.toReadableFormat()
-        ),
-        TransactionCategoryChipData(
-            type = TransactionCategory.INVESTMENTS,
-            label = TransactionCategory.INVESTMENTS.name.toReadableFormat()
-        ),
-        TransactionCategoryChipData(
             type = TransactionCategory.BANK_TRANSFER,
             label = TransactionCategory.BANK_TRANSFER.name.toReadableFormat()
         )
@@ -156,15 +143,12 @@ fun FilterBottomSheet(
         viewModel.tags
             .collectAsState(initial = emptyList())
             .value
-            .mapIndexed { index, tag ->
+            .mapIndexed { _, tag ->
                 ChipData(id = tag.tagId, label = tag.name)
             }
 
     FilterBottomSheetContent(
-        localFilterState = localFilterState,
-        onFilterChanged = { newState ->
-            localFilterState = newState
-        },
+        initialFilterState = filterState,
         durationChipData = durationChipData,
         categoryChipData = categoryChipData,
         transactionTypeChipData = transactionTypeChipData,
@@ -184,8 +168,7 @@ fun FilterBottomSheet(
 @OptIn(ExperimentalTime::class)
 @Composable
 fun FilterBottomSheetContent(
-    localFilterState: FilterState,
-    onFilterChanged: (FilterState) -> Unit,
+    initialFilterState: FilterState,
     onApplyFilter: (FilterState) -> Unit,
     onClearFilter: () -> Unit,
     durationChipData: List<Pair<Duration, String>>,
@@ -194,6 +177,8 @@ fun FilterBottomSheetContent(
     transactionCategoryChipData: List<TransactionCategoryChipData>,
     tagChipData: List<ChipData>,
 ) {
+    var localFilterState by remember { mutableStateOf(initialFilterState) }
+
     val currentMonth = remember {
         localFilterState.startDate?.toLocalDate()?.let { YearMonth(it.year, it.month) }
             ?: YearMonth.now()
@@ -262,7 +247,7 @@ fun FilterBottomSheetContent(
                                 text = label,
                                 isSelected = localFilterState.selectedDuration == duration,
                                 onSelected = {
-                                    onFilterChanged(localFilterState.copy(selectedDuration = duration))
+                                    localFilterState = localFilterState.copy(selectedDuration = duration)
                                     showCalendar = duration is Duration.Custom
                                 }
                             )
@@ -349,7 +334,7 @@ fun FilterBottomSheetContent(
                                     } else {
                                         localFilterState.selectedCategories + category.id
                                     }
-                                    onFilterChanged(localFilterState.copy(selectedCategories = newCategories))
+                                    localFilterState = localFilterState.copy(selectedCategories = newCategories)
                                 }
                             )
                         }
@@ -385,10 +370,7 @@ fun FilterBottomSheetContent(
                                     } else {
                                         localFilterState.selectedTransactionTypes + chip.type
                                     }
-
-                                    onFilterChanged(
-                                        localFilterState.copy(selectedTransactionTypes = updatedTypes)
-                                    )
+                                    localFilterState = localFilterState.copy(selectedTransactionTypes = updatedTypes)
                                 }
                             )
                         }
@@ -426,9 +408,8 @@ fun FilterBottomSheetContent(
                                     } else {
                                         localFilterState.selectedTransactionCategories + transactionCategory.type
                                     }
-
-                                    onFilterChanged(
-                                        localFilterState.copy(selectedTransactionCategories = updatedCategories)
+                                    localFilterState = localFilterState.copy(
+                                        selectedTransactionCategories = updatedCategories
                                     )
                                 }
                             )
@@ -464,7 +445,7 @@ fun FilterBottomSheetContent(
                                     } else {
                                         localFilterState.selectedTags + tag.id
                                     }
-                                    onFilterChanged(localFilterState.copy(selectedTags = newTags))
+                                    localFilterState = localFilterState.copy(selectedTags = newTags)
                                 }
                             )
                         }
@@ -489,7 +470,6 @@ fun FilterBottomSheetContent(
                     endDate = end
                 )
 
-                onFilterChanged(updatedState)
                 onApplyFilter(updatedState)
             },
             colors = ButtonDefaults.buttonColors(
@@ -545,13 +525,12 @@ fun PreviewFilterLightBottomSheet() {
 
     DailyExpenseTheme(modifier = Modifier.wrapContentSize()) {
         FilterBottomSheetContent(
-            localFilterState = fakeFilterState,
+            initialFilterState = fakeFilterState,
             durationChipData = fakeDurationChipData,
             categoryChipData = fakeCategoryChipData,
             transactionTypeChipData = fakeTransactionTypeChipData,
             transactionCategoryChipData = fakeTransactionCategoryChipData,
             tagChipData = fakeTagChipDataList,
-            onFilterChanged = {},
             onApplyFilter = {},
             onClearFilter = {}
         )
@@ -581,15 +560,14 @@ fun PreviewFilterDarkBottomSheet() {
 
     DailyExpenseTheme(modifier = Modifier.wrapContentSize()) {
         FilterBottomSheetContent(
-            localFilterState = fakeFilterState,
+            initialFilterState = fakeFilterState,
             durationChipData = fakeDurationChipData,
             categoryChipData = fakeCategoryChipData,
             transactionTypeChipData = fakeTransactionTypeChipData,
             transactionCategoryChipData = fakeTransactionCategoryChipData,
             tagChipData = fakeTagChipDataList,
-            onFilterChanged = {},
-            onClearFilter = {},
-            onApplyFilter = {}
+            onApplyFilter = {},
+            onClearFilter = {}
         )
     }
 }
