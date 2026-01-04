@@ -26,7 +26,7 @@ interface CategoryDao {
     fun getAllCategory(): Flow<List<CategoryEntity>>
 
     @Query(
-        """SELECT c.name AS categoryName, c.colorCode AS colorCode, SUM(t.amount) AS totalAmount
+        """SELECT c.name AS categoryName, c.colorCode AS colorCode, ABS(SUM(t.amount)) AS totalAmount
         FROM DE_transaction t
         INNER JOIN DE_category c ON t.categoryId = c.categoryId
         WHERE t.date BETWEEN :startDate AND :endDate AND c.transactionType = :transactionType

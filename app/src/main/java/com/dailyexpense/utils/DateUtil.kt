@@ -34,6 +34,33 @@ object DateUtil {
 
     private val tz: TimeZone = TimeZone.currentSystemDefault()
 
+    // Cached formatters to avoid recreation
+    private val dayMonthYearFormatter by lazy {
+        LocalDate.Format {
+            day(Padding.NONE)
+            char(value = ' ')
+            monthName(names = MonthNames.ENGLISH_ABBREVIATED)
+            char(value = ' ')
+            year()
+        }
+    }
+
+    private val dayMonthFormatter by lazy {
+        LocalDate.Format {
+            day(Padding.NONE)
+            char(value = ' ')
+            monthName(names = MonthNames.ENGLISH_ABBREVIATED)
+        }
+    }
+
+    private val monthFormatter by lazy {
+        LocalDate.Format { monthName(names = MonthNames.ENGLISH_FULL) }
+    }
+
+    private val yearFormatter by lazy {
+        LocalDate.Format { year() }
+    }
+
     fun Date.toOrdinalAnnotatedDate(): AnnotatedString {
         val day = SimpleDateFormat("d", Locale.getDefault()).format(this).toInt()
         val suffix = when {
@@ -137,42 +164,22 @@ object DateUtil {
         val endLocalDate = endDate.toLocalDate()
 
         return when (duration) {
-            is Duration.Today -> {
-                val formatter = LocalDate.Format {
-                    day(Padding.NONE)
-                    char(value = ' ')
-                    monthName(names = MonthNames.ENGLISH_ABBREVIATED)
-                    char(value = ' ')
-                    year()
-                }
-                startLocalDate.format(formatter)
-            }
+            is Duration.Today -> startLocalDate.format(dayMonthYearFormatter)
             is Duration.ThisWeek -> {
-                val dayMonthFormatter = LocalDate.Format {
-                    day(Padding.NONE)
-                    char(value = ' ')
-                    monthName(names = MonthNames.ENGLISH_ABBREVIATED)
-                }
-                "${startLocalDate.format(dayMonthFormatter)} - ${endLocalDate.format(dayMonthFormatter)}"
+                val start = startLocalDate.format(dayMonthFormatter)
+                val end = endLocalDate.format(dayMonthFormatter)
+                "$start - $end"
             }
             is Duration.ThisMonth -> {
-                val monthFormatter = LocalDate.Format { monthName(names = MonthNames.ENGLISH_FULL) }
-                val yearFormatter = LocalDate.Format { year() }
-                "${startLocalDate.format(monthFormatter)} ${startLocalDate.format(yearFormatter)}"
+                val month = startLocalDate.format(monthFormatter)
+                val year = startLocalDate.format(yearFormatter)
+                "$month $year"
             }
-            is Duration.ThisYear -> {
-                val yearFormatter = LocalDate.Format { year() }
-                startLocalDate.format(yearFormatter)
-            }
+            is Duration.ThisYear -> startLocalDate.format(yearFormatter)
             is Duration.Custom -> {
-                val fullFormatter = LocalDate.Format {
-                    day(Padding.NONE)
-                    char(value = ' ')
-                    monthName(names = MonthNames.ENGLISH_ABBREVIATED)
-                    char(value = ' ')
-                    year()
-                }
-                "${startLocalDate.format(fullFormatter)} - ${endLocalDate.format(fullFormatter)}"
+                val start = startLocalDate.format(dayMonthYearFormatter)
+                val end = endLocalDate.format(dayMonthYearFormatter)
+                "$start - $end"
             }
         }
     }
@@ -193,13 +200,14 @@ object DateUtil {
     }
 
     fun LocalDate.endOfMonth(): Long {
+        // Simplified using yearMonth.lastDay property
         val daysInMonth = when (month) {
             Month.JANUARY, Month.MARCH, Month.MAY, Month.JULY,
             Month.AUGUST, Month.OCTOBER, Month.DECEMBER -> 31
             Month.APRIL, Month.JUNE, Month.SEPTEMBER, Month.NOVEMBER -> 30
-            Month.FEBRUARY -> if (isLeapYear(year)) 29 else 28
+            Month.FEBRUARY -> if ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)) 29 else 28
         }
-        return LocalDate(year, month, day = daysInMonth).endOfDayOrTodayMillis()
+        return LocalDate(year, month, daysInMonth).endOfDayOrTodayMillis()
     }
 
     fun LocalDate.startOfYear(): Long {
@@ -210,68 +218,34 @@ object DateUtil {
         return LocalDate(year, Month.DECEMBER, day = 31).endOfDayOrTodayMillis()
     }
 
-    fun isLeapYear(year: Int): Boolean {
-        return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)
+    private fun getPreviousWeekRange(startDate: Long): Pair<Long, Long> {
+        val start = startDate.toLocalDate().minus(period = DatePeriod(days = 7))
+        return start.startOfWeek() to start.endOfWeek()
     }
 
-    private fun getPreviousWeekRange(startDate: Long, endDate: Long): Pair<Long, Long> {
-        val start = startDate.toLocalDate()
-        val end = endDate.toLocalDate()
-
-        val prevStart = start.minus(period = DatePeriod(days = 7)).startOfWeek()
-        val prevEnd = end.minus(period = DatePeriod(days = 7)).endOfWeek()
-
-        return prevStart to prevEnd
+    private fun getNextWeekRange(startDate: Long): Pair<Long, Long> {
+        val start = startDate.toLocalDate().plus(period = DatePeriod(days = 7))
+        return start.startOfWeek() to start.endOfWeek()
     }
 
-    private fun getNextWeekRange(startDate: Long, endDate: Long): Pair<Long, Long> {
-        val start = startDate.toLocalDate()
-        val end = endDate.toLocalDate()
-
-        val prevStart = start.plus(period = DatePeriod(days = 7)).startOfWeek()
-        val prevEnd = end.plus(period = DatePeriod(days = 7)).endOfWeek()
-
-        return prevStart to prevEnd
+    private fun getPreviousMonthRange(startDate: Long): Pair<Long, Long> {
+        val date = startDate.toLocalDate().minus(period = DatePeriod(months = 1))
+        return date.startOfMonth() to date.endOfMonth()
     }
 
-    private fun getPreviousMonthRange(startDate: Long, endDate: Long): Pair<Long, Long> {
-        val start = startDate.toLocalDate()
-        val end = endDate.toLocalDate()
-
-        val prevStart = start.minus(period = DatePeriod(months = 1)).startOfMonth()
-        val prevEnd = end.minus(period = DatePeriod(months = 1)).endOfMonth()
-
-        return prevStart to prevEnd
+    private fun getNextMonthRange(startDate: Long): Pair<Long, Long> {
+        val date = startDate.toLocalDate().plus(period = DatePeriod(months = 1))
+        return date.startOfMonth() to date.endOfMonth()
     }
 
-    private fun getNextMonthRange(startDate: Long, endDate: Long): Pair<Long, Long> {
-        val start = startDate.toLocalDate()
-        val end = endDate.toLocalDate()
-
-        val prevStart = start.plus(period = DatePeriod(months = 1)).startOfMonth()
-        val prevEnd = end.plus(period = DatePeriod(months = 1)).endOfMonth()
-
-        return prevStart to prevEnd
+    private fun getPreviousYearRange(startDate: Long): Pair<Long, Long> {
+        val date = startDate.toLocalDate().minus(period = DatePeriod(years = 1))
+        return date.startOfYear() to date.endOfYear()
     }
 
-    private fun getPreviousYearRange(startDate: Long, endDate: Long): Pair<Long, Long> {
-        val start = startDate.toLocalDate()
-        val end = endDate.toLocalDate()
-
-        val prevStart = start.minus(period = DatePeriod(years = 1)).startOfYear()
-        val prevEnd = end.minus(period = DatePeriod(years = 1)).endOfYear()
-
-        return prevStart to prevEnd
-    }
-
-    private fun getNextYearRange(startDate: Long, endDate: Long): Pair<Long, Long> {
-        val start = startDate.toLocalDate()
-        val end = endDate.toLocalDate()
-
-        val prevStart = start.plus(period = DatePeriod(years = 1)).startOfYear()
-        val prevEnd = end.plus(period = DatePeriod(years = 1)).endOfYear()
-
-        return prevStart to prevEnd
+    private fun getNextYearRange(startDate: Long): Pair<Long, Long> {
+        val date = startDate.toLocalDate().plus(period = DatePeriod(years = 1))
+        return date.startOfYear() to date.endOfYear()
     }
 
     fun isNextEnabledForDuration(
@@ -311,9 +285,9 @@ object DateUtil {
     ): Pair<Long, Long> {
         return when (duration) {
             is Duration.Today -> getTodayRange()
-            is Duration.ThisWeek -> getPreviousWeekRange(startDate, endDate)
-            is Duration.ThisMonth -> getPreviousMonthRange(startDate, endDate)
-            is Duration.ThisYear -> getPreviousYearRange(startDate, endDate)
+            is Duration.ThisWeek -> getPreviousWeekRange(startDate)
+            is Duration.ThisMonth -> getPreviousMonthRange(startDate)
+            is Duration.ThisYear -> getPreviousYearRange(startDate)
             is Duration.Custom -> startDate to endDate
         }
     }
@@ -325,9 +299,9 @@ object DateUtil {
     ): Pair<Long, Long> {
         return when (duration) {
             is Duration.Today -> getTodayRange()
-            is Duration.ThisWeek -> getNextWeekRange(startDate, endDate)
-            is Duration.ThisMonth -> getNextMonthRange(startDate, endDate)
-            is Duration.ThisYear -> getNextYearRange(startDate, endDate)
+            is Duration.ThisWeek -> getNextWeekRange(startDate)
+            is Duration.ThisMonth -> getNextMonthRange(startDate)
+            is Duration.ThisYear -> getNextYearRange(startDate)
             is Duration.Custom -> startDate to endDate
         }
     }

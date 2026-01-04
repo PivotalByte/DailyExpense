@@ -3,11 +3,11 @@
   <component name="deploymentTargetSelector">
     <selectionStates>
       <SelectionState runConfigName="app">
-        <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-09-30T10:48:25.463917100Z">
+        <option name="selectionMode" value="DIALOG" />
+        <DropdownSelection timestamp="2026-01-02T13:40:04.000493700Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\DEEP\.android\avd\Pixel_4_XL_API_30.avd" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\DEEP\.android\avd\Pixel_4_XL_API_30_Dark.avd" />
             </handle>
           </Target>
         </DropdownSelection>
@@ -15,12 +15,12 @@
           <targets>
             <Target type="DEFAULT_BOOT">
               <handle>
-                <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\DEEP\.android\avd\Pixel_4_XL_API_30.avd" />
+                <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\DEEP\.android\avd\Pixel_4_XL_API_30_Dark.avd" />
               </handle>
             </Target>
             <Target type="DEFAULT_BOOT">
               <handle>
-                <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\DEEP\.android\avd\Pixel_4_XL_API_30_Dark.avd" />
+                <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\DEEP\.android\avd\Pixel_4_XL_API_30.avd" />
               </handle>
             </Target>
           </targets>

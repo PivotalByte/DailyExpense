@@ -18,6 +18,7 @@ import com.dailyexpense.data.room.entity.CategoryEntity
 @Composable
 fun CategoryGrid(
     categories: List<CategoryEntity>,
+    selectedCategoryId: Int? = null,
     onCategoryClick: (CategoryEntity) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -33,7 +34,11 @@ fun CategoryGrid(
                             .padding(8.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        CategoryCard(category, onCategoryClick)
+                        CategoryCard(
+                            category = category,
+                            isSelected = category.categoryId == selectedCategoryId,
+                            onCategoryClick = onCategoryClick
+                        )
                     }
                 }
 
@@ -57,5 +62,9 @@ fun PreviewCategoryGrid() {
         CategoryEntity("Groceries", TransactionType.EXPENSE, "ic_category_groceries", "#FF0000")
     val category4 =
         CategoryEntity("Groceries", TransactionType.EXPENSE, "ic_category_groceries", "#FF0000")
-    CategoryGrid(listOf(category1, category2, category3, category4), {})
+    CategoryGrid(
+        categories = listOf(category1, category2, category3, category4),
+        selectedCategoryId = null,
+        onCategoryClick = {}
+    )
 }

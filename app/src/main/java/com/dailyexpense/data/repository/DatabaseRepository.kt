@@ -15,6 +15,7 @@ import com.dailyexpense.data.room.dao.AccountDao
 import com.dailyexpense.data.room.dao.CategoryDao
 import com.dailyexpense.data.room.dao.TagDao
 import com.dailyexpense.data.room.dao.TransactionDao
+import com.dailyexpense.data.room.entity.AccountEntity
 import com.dailyexpense.data.room.entity.CategoryEntity
 import com.dailyexpense.data.room.entity.TagEntity
 import com.dailyexpense.data.room.entity.TransactionEntity
@@ -85,6 +86,8 @@ class DatabaseRepository @Inject constructor(
 
     fun getTotalBalance(): Flow<Double> = accountDao.getTotalBalance()
 
+    fun getAllAccounts(): Flow<List<AccountEntity>> = accountDao.getAllAccounts()
+
     fun getTotalExpenseForRange(
         startDate: Long,
         endDate: Long
@@ -105,6 +108,33 @@ class DatabaseRepository @Inject constructor(
 
     fun getAllTags(): Flow<List<TagEntity>> =
         tagDao.getAllTags()
+
+    fun searchTags(query: String): Flow<List<TagEntity>> =
+        tagDao.searchTags(query)
+
+    suspend fun getOrCreateTag(tagName: String): TagEntity {
+        val existingTag = tagDao.getTagByName(tagName)
+        return if (existingTag != null) {
+            existingTag
+        } else {
+            val newTag = TagEntity(name = tagName)
+            val tagId = tagDao.insert(newTag)
+            newTag.copy(tagId = tagId.toInt())
+        }
+    }
+
+    suspend fun insertTransactionWithTags(transaction: TransactionEntity, tagIds: List<Int>): Long {
+        val transactionId = transactionDao.insertTransaction(transaction)
+        tagIds.forEach { tagId ->
+            tagDao.insertTransactionTagCrossRef(
+                com.dailyexpense.data.room.junctions.TransactionTagCrossRef(
+                    transactionId = transactionId.toInt(),
+                    tagId = tagId
+                )
+            )
+        }
+        return transactionId
+    }
 
     fun getCategoryExpenseSummary(startDate: Long, endDate: Long): Flow<List<CategorySummary>> =
         categoryDao.getCategorySummaryBetweenDatesByType(
