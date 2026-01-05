@@ -61,37 +61,10 @@ import com.dailyexpense.ui.components.TextChip
 import com.dailyexpense.ui.theme.DailyExpenseTheme
 import com.dailyexpense.ui.theme.LocalCustomColors
 import androidx.core.graphics.toColorInt
+import com.dailyexpense.ui.actions.NewTransactionActions
+import com.dailyexpense.ui.states.NewTransactionState
 import com.dailyexpense.utils.DateUtil.toOrdinalAnnotatedDate
 import java.util.Date
-
-data class NewTransactionState(
-    val transactionType: TransactionType,
-    val amount: String,
-    val selectedCategory: CategoryEntity?,
-    val selectedAccount: AccountEntity?,
-    val selectedPaymentMethod: TransactionCategory?,
-    val notes: String,
-    val selectedDate: Long,
-    val transactionTypeChipData: List<TransactionTypeChipData>,
-    val selectedTags: List<TagEntity>,
-    val tagSearchQuery: String,
-    val suggestedTags: List<TagEntity>
-)
-
-data class NewTransactionActions(
-    val onTransactionTypeChanged: (TransactionType) -> Unit = {},
-    val onAmountChanged: (String) -> Unit = {},
-    val onCategoryFieldClick: () -> Unit = {},
-    val onAccountFieldClick: () -> Unit = {},
-    val onPaymentMethodChanged: (TransactionCategory) -> Unit = {},
-    val onNotesChanged: (String) -> Unit = {},
-    val onDateFieldClick: () -> Unit = {},
-    val onTagSearchChanged: (String) -> Unit = {},
-    val onTagSelected: (TagEntity) -> Unit = {},
-    val onTagRemoved: (TagEntity) -> Unit = {},
-    val onCreateTag: (String) -> Unit = {},
-    val onSaveClick: () -> Unit = {}
-)
 
 @Composable
 fun NewTransactionScreen(
