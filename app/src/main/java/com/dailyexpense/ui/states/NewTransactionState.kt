@@ -15,6 +15,8 @@ data class NewTransactionState(
     val selectedPaymentMethod: TransactionCategory?,
     val notes: String,
     val selectedDate: Long,
+    val selectedHour: Int,
+    val selectedMinute: Int,
     val transactionTypeChipData: List<TransactionTypeChipData>,
     val selectedTags: List<TagEntity>,
     val tagSearchQuery: String,

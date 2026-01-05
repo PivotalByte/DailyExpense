@@ -141,8 +141,9 @@ dependencies {
     //MPChart
     implementation(libs.mpandroidchart)
 
-    //Calendar
+    //Calendar and Time picker
     implementation(libs.compose.multiplatform)
+    implementation(libs.kmp.time.picker)
 
     // Google service
     implementation(platform(libs.firebase.bom))
