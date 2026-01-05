@@ -26,6 +26,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -42,6 +43,7 @@ fun CustomTextField(
     placeholder: String = "",
     prefix: String = "",
     keyboardType: KeyboardType = KeyboardType.Text,
+    capitalization: KeyboardCapitalization = KeyboardCapitalization.None,
     validation: ((String) -> Boolean)? = null,
     trailingIcon: (@Composable () -> Unit)? = null
 ) {
@@ -155,7 +157,8 @@ fun CustomTextField(
                     cursorBrush = SolidColor(LocalCustomColors.current.primaryColor),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(
-                        keyboardType = keyboardType
+                        keyboardType = keyboardType,
+                        capitalization = capitalization
                     )
                 )
             }

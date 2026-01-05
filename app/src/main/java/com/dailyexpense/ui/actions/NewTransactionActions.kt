@@ -12,6 +12,7 @@ data class NewTransactionActions(
     val onPaymentMethodChanged: (TransactionCategory) -> Unit = {},
     val onNotesChanged: (String) -> Unit = {},
     val onDateFieldClick: () -> Unit = {},
+    val onTimeFieldClick: () -> Unit = {},
     val onTagSearchChanged: (String) -> Unit = {},
     val onTagSelected: (TagEntity) -> Unit = {},
     val onTagRemoved: (TagEntity) -> Unit = {},

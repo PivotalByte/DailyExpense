@@ -17,7 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,7 +32,27 @@ import com.dailyexpense.ui.theme.LocalCustomColors
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(navController: NavHostController) {
-    var selectedTab by remember { mutableStateOf<MainTab>(value = MainTab.Dashboard) }
+    var selectedTab by rememberSaveable(
+        stateSaver = androidx.compose.runtime.saveable.Saver(
+            save = { tab ->
+                when (tab) {
+                    is MainTab.Dashboard -> 0
+                    is MainTab.Transactions -> 1
+                    is MainTab.Analytics -> 2
+                    is MainTab.Account -> 3
+                }
+            },
+            restore = { index ->
+                when (index) {
+                    0 -> MainTab.Dashboard
+                    1 -> MainTab.Transactions
+                    2 -> MainTab.Analytics
+                    3 -> MainTab.Account
+                    else -> MainTab.Dashboard
+                }
+            }
+        )
+    ) { mutableStateOf<MainTab>(value = MainTab.Dashboard) }
     Scaffold(
         floatingActionButton = {
             AnimatedVisibility(

@@ -34,6 +34,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -54,6 +55,7 @@ import com.dailyexpense.ui.bottomsheet.factory.rememberCustomBottomSheetControll
 import com.dailyexpense.ui.bottomsheet.sheets.AccountSelectionBottomSheet
 import com.dailyexpense.ui.bottomsheet.sheets.CategorySelectionBottomSheet
 import com.dailyexpense.ui.bottomsheet.sheets.DateSelectionBottomSheet
+import com.dailyexpense.ui.bottomsheet.sheets.TimeSelectionBottomSheet
 import com.dailyexpense.ui.components.BannerAdView
 import com.dailyexpense.ui.components.CustomTextField
 import com.dailyexpense.ui.components.CustomToolbar
@@ -65,6 +67,7 @@ import com.dailyexpense.ui.actions.NewTransactionActions
 import com.dailyexpense.ui.states.NewTransactionState
 import com.dailyexpense.utils.DateUtil.toOrdinalAnnotatedDate
 import java.util.Date
+import java.util.Locale
 
 @Composable
 fun NewTransactionScreen(
@@ -78,6 +81,8 @@ fun NewTransactionScreen(
     val selectedPaymentMethod by newTransactionViewModel.selectedPaymentMethodState.collectAsState()
     val notes by newTransactionViewModel.notesState.collectAsState()
     val selectedDate by newTransactionViewModel.dateState.collectAsState()
+    val selectedHour by newTransactionViewModel.hourState.collectAsState()
+    val selectedMinute by newTransactionViewModel.minuteState.collectAsState()
     val categories by newTransactionViewModel.categoriesState.collectAsState()
     val accounts by newTransactionViewModel.accountsState.collectAsState()
     val saveResult by newTransactionViewModel.saveResultState.collectAsState()
@@ -123,6 +128,8 @@ fun NewTransactionScreen(
             selectedPaymentMethod = selectedPaymentMethod,
             notes = notes,
             selectedDate = selectedDate,
+            selectedHour = selectedHour,
+            selectedMinute = selectedMinute,
             transactionTypeChipData = transactionTypeChipData,
             selectedTags = selectedTags,
             tagSearchQuery = tagSearchQuery,
@@ -172,6 +179,18 @@ fun NewTransactionScreen(
                         selectedDate = selectedDate,
                         onDateSelected = { date ->
                             newTransactionViewModel.updateDate(date)
+                        },
+                        closeSheet = { bottomSheetController.hide() }
+                    )
+                }
+            },
+            onTimeFieldClick = {
+                bottomSheetController.show {
+                    TimeSelectionBottomSheet(
+                        selectedHour = selectedHour,
+                        selectedMinute = selectedMinute,
+                        onTimeSelected = { hour, minute ->
+                            newTransactionViewModel.updateTime(hour, minute)
                         },
                         closeSheet = { bottomSheetController.hide() }
                     )
@@ -266,14 +285,27 @@ fun NewTransactionScreenContent(
                     value = state.notes,
                     onValueChange = actions.onNotesChanged,
                     label = "Notes",
-                    placeholder = "Enter notes"
+                    placeholder = "Enter notes",
+                    capitalization = KeyboardCapitalization.Sentences
                 )
             }
             item {
-                DateSelectionField(
-                    selectedDate = state.selectedDate,
-                    onClick = actions.onDateFieldClick
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(space = 8.dp)
+                ) {
+                    DateSelectionField(
+                        selectedDate = state.selectedDate,
+                        onClick = actions.onDateFieldClick,
+                        modifier = Modifier.weight(1f)
+                    )
+                    TimeSelectionField(
+                        selectedHour = state.selectedHour,
+                        selectedMinute = state.selectedMinute,
+                        onClick = actions.onTimeFieldClick,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
             }
             item {
                 CategorySelectionField(
@@ -336,11 +368,11 @@ fun NewTransactionScreenContent(
 @Composable
 fun DateSelectionField(
     selectedDate: Long,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = modifier
             .border(
                 width = 1.dp,
                 color = LocalCustomColors.current.searchBoxBorder,
@@ -363,6 +395,43 @@ fun DateSelectionField(
 
         Text(
             text = Date(selectedDate).toOrdinalAnnotatedDate(),
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+    }
+}
+
+@Composable
+fun TimeSelectionField(
+    selectedHour: Int,
+    selectedMinute: Int,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .border(
+                width = 1.dp,
+                color = LocalCustomColors.current.searchBoxBorder,
+                shape = RoundedCornerShape(12.dp)
+            )
+            .clip(RoundedCornerShape(12.dp))
+            .background(
+                color = LocalCustomColors.current.cardBg,
+                shape = RoundedCornerShape(12.dp)
+            )
+            .clickable { onClick() }
+            .padding(horizontal = 14.dp, vertical = 10.dp)
+    ) {
+        Text(
+            text = "Time",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(bottom = 4.dp)
+        )
+
+        Text(
+            text = formatTimeTo12Hour(selectedHour, selectedMinute),
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurface
         )
@@ -580,6 +649,7 @@ fun TagSelectionSection(
             onValueChange = onSearchQueryChanged,
             label = "Tags (Optional)",
             placeholder = "Search or create tags",
+            capitalization = KeyboardCapitalization.Words,
             trailingIcon = {
                 if (searchQuery.isNotBlank()) {
                     Row(
@@ -697,11 +767,22 @@ fun TagChip(
     }
 }
 
+fun formatTimeTo12Hour(hour: Int, minute: Int): String {
+    val period = if (hour < 12) "AM" else "PM"
+    val displayHour = when (hour) {
+        0 -> 12
+        in 1..12 -> hour
+        else -> hour - 12
+    }
+    return String.format(Locale.US, "%02d:%02d %s", displayHour, minute, period)
+}
+
 @Preview
 @Composable
 fun PreviewNewTransaction() {
     val navController = rememberNavController()
     DailyExpenseTheme {
+        val calendar = java.util.Calendar.getInstance()
         val state = NewTransactionState(
             transactionType = TransactionType.EXPENSE,
             amount = "",
@@ -710,6 +791,8 @@ fun PreviewNewTransaction() {
             selectedPaymentMethod = null,
             notes = "",
             selectedDate = System.currentTimeMillis(),
+            selectedHour = calendar.get(java.util.Calendar.HOUR_OF_DAY),
+            selectedMinute = calendar.get(java.util.Calendar.MINUTE),
             transactionTypeChipData = fakeTransactionTypeChipDataNewTransaction,
             selectedTags = emptyList(),
             tagSearchQuery = "",

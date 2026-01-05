@@ -46,6 +46,12 @@ class NewTransactionViewModel @Inject constructor(
     private val _dateState = MutableStateFlow(System.currentTimeMillis())
     val dateState: StateFlow<Long> = _dateState
 
+    private val _hourState = MutableStateFlow(java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY))
+    val hourState: StateFlow<Int> = _hourState
+
+    private val _minuteState = MutableStateFlow(java.util.Calendar.getInstance().get(java.util.Calendar.MINUTE))
+    val minuteState: StateFlow<Int> = _minuteState
+
     private val _selectedTagsState = MutableStateFlow<List<TagEntity>>(emptyList())
     val selectedTagsState: StateFlow<List<TagEntity>> = _selectedTagsState
 
@@ -111,6 +117,11 @@ class NewTransactionViewModel @Inject constructor(
         _dateState.value = date
     }
 
+    fun updateTime(hour: Int, minute: Int) {
+        _hourState.value = hour
+        _minuteState.value = minute
+    }
+
     fun updateTagSearchQuery(query: String) {
         _tagSearchQueryState.value = query
     }
@@ -165,11 +176,19 @@ class NewTransactionViewModel @Inject constructor(
                 return@launch
             }
 
+            // Combine date and time into a single timestamp
+            val calendar = java.util.Calendar.getInstance()
+            calendar.timeInMillis = dateState.value
+            calendar.set(java.util.Calendar.HOUR_OF_DAY, hourState.value)
+            calendar.set(java.util.Calendar.MINUTE, minuteState.value)
+            calendar.set(java.util.Calendar.SECOND, 0)
+            calendar.set(java.util.Calendar.MILLISECOND, 0)
+
             val transaction = TransactionEntity(
-                title = selectedCategoryState.value!!.name,
+                title = notesState.value,
                 categoryId = selectedCategoryState.value!!.categoryId,
                 accountId = selectedAccountState.value!!.accountId,
-                date = Date(dateState.value),
+                date = Date(calendar.timeInMillis),
                 transactionType = transactionTypeState.value,
                 transactionCategory = selectedPaymentMethodState.value!!,
                 amount = amountState.value.toDouble()
