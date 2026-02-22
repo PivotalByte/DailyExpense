@@ -88,6 +88,14 @@ class DatabaseRepository @Inject constructor(
 
     fun getAllAccounts(): Flow<List<AccountEntity>> = accountDao.getAllAccounts()
 
+    suspend fun getAccountById(accountId: Int): AccountEntity? = accountDao.getAccountById(accountId)
+
+    suspend fun insertAccount(accountEntity: AccountEntity) =
+        accountDao.insertAccount(accountEntity)
+
+    suspend fun deleteAccount(accountEntity: AccountEntity) =
+        accountDao.deleteAccount(accountEntity)
+
     fun getTotalExpenseForRange(
         startDate: Long,
         endDate: Long

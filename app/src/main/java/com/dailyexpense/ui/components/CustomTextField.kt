@@ -45,12 +45,15 @@ fun CustomTextField(
     keyboardType: KeyboardType = KeyboardType.Text,
     capitalization: KeyboardCapitalization = KeyboardCapitalization.None,
     validation: ((String) -> Boolean)? = null,
-    trailingIcon: (@Composable () -> Unit)? = null
+    trailingIcon: (@Composable () -> Unit)? = null,
+    enabled: Boolean = true
 ) {
     var isFocused by remember { mutableStateOf(false) }
 
     val borderColor by animateColorAsState(
-        targetValue = if (isFocused) {
+        targetValue = if (!enabled) {
+            LocalCustomColors.current.searchBoxBorder.copy(alpha = 0.5f)
+        } else if (isFocused) {
             LocalCustomColors.current.primaryColor
         } else {
             LocalCustomColors.current.searchBoxBorder
@@ -60,13 +63,13 @@ fun CustomTextField(
     )
 
     val borderWidth by animateDpAsState(
-        targetValue = if (isFocused) 2.dp else 1.dp,
+        targetValue = if (isFocused && enabled) 2.dp else 1.dp,
         animationSpec = tween(durationMillis = 200),
         label = "borderWidth"
     )
 
     val shadowElevation by animateDpAsState(
-        targetValue = if (isFocused) 4.dp else 0.dp,
+        targetValue = if (isFocused && enabled) 4.dp else 0.dp,
         animationSpec = tween(durationMillis = 200),
         label = "shadowElevation"
     )
@@ -96,7 +99,9 @@ fun CustomTextField(
                 fontWeight = FontWeight.Medium,
                 letterSpacing = 0.5.sp
             ),
-            color = if (isFocused) {
+            color = if (!enabled) {
+                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+            } else if (isFocused) {
                 LocalCustomColors.current.primaryColor
             } else {
                 MaterialTheme.colorScheme.onSurfaceVariant
@@ -152,10 +157,16 @@ fun CustomTextField(
                     textStyle = MaterialTheme.typography.titleLarge.copy(
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Normal,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = if (enabled) {
+                            MaterialTheme.colorScheme.onSurface
+                        } else {
+                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                        }
                     ),
                     cursorBrush = SolidColor(LocalCustomColors.current.primaryColor),
                     singleLine = true,
+                    enabled = enabled,
+                    readOnly = !enabled,
                     keyboardOptions = KeyboardOptions(
                         keyboardType = keyboardType,
                         capitalization = capitalization

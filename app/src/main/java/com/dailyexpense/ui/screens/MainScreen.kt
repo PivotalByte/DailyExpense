@@ -94,7 +94,7 @@ fun MainScreen(navController: NavHostController) {
             contentAlignment = Alignment.TopStart
         ) {
             when (selectedTab) {
-                MainTab.Dashboard -> DashboardScreen()
+                MainTab.Dashboard -> DashboardScreen(navController = navController)
                 MainTab.Transactions -> TransactionListScreen()
                 MainTab.Analytics -> AnalyticsScreen()
                 MainTab.Account -> Text(text = "Current tab: ${stringResource(id = selectedTab.labelRes)}")

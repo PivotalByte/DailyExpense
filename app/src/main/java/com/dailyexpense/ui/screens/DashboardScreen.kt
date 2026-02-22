@@ -22,11 +22,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import com.dailyexpense.R
 import com.dailyexpense.data.fakeCategories
 import com.dailyexpense.data.fakeTransactions
 import com.dailyexpense.data.room.entity.CategoryEntity
 import com.dailyexpense.data.room.entity.TransactionEntity
+import com.dailyexpense.navigation.Route
 import com.dailyexpense.presentation.DashboardViewModel
 import com.dailyexpense.ui.components.AmountCard
 import com.dailyexpense.ui.components.CategoryGrid
@@ -38,7 +40,8 @@ import com.dailyexpense.utils.extensions.toIndianCurrencyFormat
 
 @Composable
 fun DashboardScreen(
-    viewModel: DashboardViewModel = hiltViewModel()
+    viewModel: DashboardViewModel = hiltViewModel(),
+    navController: NavHostController? = null
 ) {
     val categories by viewModel.categories.collectAsState()
     val recentTransactions by viewModel.recentTransactions.collectAsState()
@@ -52,6 +55,9 @@ fun DashboardScreen(
         totalBalance = totalBalance.toIndianCurrencyFormat(),
         totalExpense = totalExpense.toIndianCurrencyFormat(),
         totalIncome = totalIncome.toIndianCurrencyFormat(),
+        onTotalBalanceClick = {
+            navController?.navigate(Route.AccountList.route)
+        }
     )
 }
 
@@ -61,7 +67,8 @@ fun DashboardScreenView(
     recentTransactions: List<TransactionEntity>,
     totalBalance: String,
     totalExpense: String,
-    totalIncome: String
+    totalIncome: String,
+    onTotalBalanceClick: () -> Unit = {}
 ) {
     LazyColumn(
         modifier = Modifier
@@ -83,7 +90,8 @@ fun DashboardScreenView(
                     cardTitle = stringResource(id = R.string.label_total_balance),
                     cardAmount = stringResource(id = R.string.label_rupee_sign_with_value, totalBalance),
                     cardTitleColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    tooltipMsg = stringResource(id = R.string.tooltip_total_balance)
+                    tooltipMsg = stringResource(id = R.string.tooltip_total_balance),
+                    onClick = onTotalBalanceClick
                 )
             }
         }

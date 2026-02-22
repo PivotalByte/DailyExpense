@@ -45,9 +45,16 @@ fun AmountCard(
     cardAmount: String,
     cardTitleColor: Color,
     tooltipMsg: String = "",
+    onClick: (() -> Unit)? = null
 ) {
     Card(
-        modifier = modifier,
+        modifier = modifier.then(
+            if (onClick != null) {
+                Modifier.clickable { onClick() }
+            } else {
+                Modifier
+            }
+        ),
         shape = shape,
         colors = colors,
         elevation = elevation
