@@ -3,7 +3,7 @@ package com.dailyexpense.ui.states
 import com.dailyexpense.data.enums.TransactionCategory
 import com.dailyexpense.data.enums.TransactionType
 import com.dailyexpense.data.models.TransactionTypeChipData
-import com.dailyexpense.data.room.entity.AccountEntity
+import com.dailyexpense.data.models.AccountWithBalance
 import com.dailyexpense.data.room.entity.CategoryEntity
 import com.dailyexpense.data.room.entity.TagEntity
 
@@ -11,7 +11,7 @@ data class NewTransactionState(
     val transactionType: TransactionType,
     val amount: String,
     val selectedCategory: CategoryEntity?,
-    val selectedAccount: AccountEntity?,
+    val selectedAccount: AccountWithBalance?,
     val selectedPaymentMethod: TransactionCategory?,
     val notes: String,
     val selectedDate: Long,

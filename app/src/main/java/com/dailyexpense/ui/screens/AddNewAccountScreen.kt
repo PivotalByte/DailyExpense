@@ -37,7 +37,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.dailyexpense.data.room.entity.AccountEntity
 import com.dailyexpense.presentation.AccountViewModel
 import com.dailyexpense.ui.bottomsheet.BottomSheetHost
 import com.dailyexpense.ui.bottomsheet.factory.rememberCustomBottomSheetController
@@ -99,7 +98,6 @@ fun AddNewAccountScreen(
             accountBankName = accountBankName,
             accountNumber = accountNumber,
             balance = balance,
-            currentAccount = currentAccount,
             onAccountHolderNameChange = accountViewModel::updateAccountHolderName,
             onAccountBankNameChange = accountViewModel::updateAccountBankName,
             onAccountNumberChange = accountViewModel::updateAccountNumber,
@@ -147,7 +145,6 @@ fun AddNewAccountScreenContent(
     accountBankName: String,
     accountNumber: String,
     balance: String,
-    currentAccount: AccountEntity?,
     onAccountHolderNameChange: (String) -> Unit,
     onAccountBankNameChange: (String) -> Unit,
     onAccountNumberChange: (String) -> Unit,
@@ -262,7 +259,7 @@ fun AddNewAccountScreenContent(
                 CustomTextField(
                     value = balance,
                     onValueChange = { newValue ->
-                        if (newValue.isEmpty() || newValue.matches(Regex("^\\d*\\.?\\d{0,2}$"))) {
+                        if (newValue.isEmpty() || newValue.matches(Regex("^-?\\d*\\.?\\d{0,2}$"))) {
                             onBalanceChange(newValue)
                         }
                     },
@@ -286,9 +283,9 @@ fun AddNewAccountScreenContent(
                         ),
                         shape = RoundedCornerShape(12.dp),
                         enabled = accountHolderName.isNotBlank() &&
-                                  accountBankName.isNotBlank() &&
-                                  accountNumber.isNotBlank() &&
-                                  balance.isNotBlank()
+                            accountBankName.isNotBlank() &&
+                            accountNumber.isNotBlank() &&
+                            balance.isNotBlank()
                     ) {
                         Text(
                             text = if (isExistingAccount) "Update Account" else "Save Account",

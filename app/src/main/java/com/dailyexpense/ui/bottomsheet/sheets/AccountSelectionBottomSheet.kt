@@ -17,14 +17,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import com.dailyexpense.data.room.entity.AccountEntity
+import com.dailyexpense.data.models.AccountWithBalance
 import com.dailyexpense.ui.theme.LocalCustomColors
 
 @Composable
 fun AccountSelectionBottomSheet(
-    accounts: List<AccountEntity>,
-    selectedAccount: AccountEntity?,
-    onAccountSelected: (AccountEntity) -> Unit,
+    accounts: List<AccountWithBalance>,
+    selectedAccount: AccountWithBalance?,
+    onAccountSelected: (AccountWithBalance) -> Unit,
     closeSheet: () -> Unit
 ) {
     Column(
@@ -59,7 +59,7 @@ fun AccountSelectionBottomSheet(
                 accounts.forEach { account ->
                     AccountItem(
                         account = account,
-                        isSelected = selectedAccount?.accountId == account.accountId,
+                        isSelected = selectedAccount?.account?.accountId == account.account.accountId,
                         onClick = {
                             onAccountSelected(account)
                             closeSheet()
@@ -73,7 +73,7 @@ fun AccountSelectionBottomSheet(
 
 @Composable
 fun AccountItem(
-    account: AccountEntity,
+    account: AccountWithBalance,
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
@@ -106,18 +106,18 @@ fun AccountItem(
             modifier = Modifier.weight(1f)
         ) {
             Text(
-                text = account.accountBankName,
+                text = account.account.accountBankName,
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface
             )
             Text(
-                text = account.accountHolderName,
+                text = account.account.accountHolderName,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
         Text(
-            text = "₹${String.format(java.util.Locale.US, "%.2f", account.balance)}",
+            text = "₹${String.format(java.util.Locale.US, "%.2f", account.currentBalance)}",
             style = MaterialTheme.typography.titleSmall,
             color = if (isSelected) {
                 LocalCustomColors.current.primaryColor

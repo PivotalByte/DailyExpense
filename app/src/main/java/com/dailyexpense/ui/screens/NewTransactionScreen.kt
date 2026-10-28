@@ -46,7 +46,7 @@ import com.dailyexpense.data.enums.TransactionCategory
 import com.dailyexpense.data.enums.TransactionType
 import com.dailyexpense.data.fakeTransactionTypeChipDataNewTransaction
 import com.dailyexpense.data.models.TransactionTypeChipData
-import com.dailyexpense.data.room.entity.AccountEntity
+import com.dailyexpense.data.models.AccountWithBalance
 import com.dailyexpense.data.room.entity.CategoryEntity
 import com.dailyexpense.data.room.entity.TagEntity
 import com.dailyexpense.presentation.NewTransactionViewModel
@@ -440,7 +440,7 @@ fun TimeSelectionField(
 
 @Composable
 fun AccountSelectionField(
-    selectedAccount: AccountEntity?,
+    selectedAccount: AccountWithBalance?,
     onClick: () -> Unit
 ) {
     Column(
@@ -474,18 +474,18 @@ fun AccountSelectionField(
             ) {
                 Column {
                     Text(
-                        text = selectedAccount.accountBankName,
+                        text = selectedAccount.account.accountBankName,
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
-                        text = selectedAccount.accountHolderName,
+                        text = selectedAccount.account.accountHolderName,
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
                 Text(
-                    text = "₹${String.format(java.util.Locale.US, "%.2f", selectedAccount.balance)}",
+                    text = "₹${String.format(java.util.Locale.US, "%.2f", selectedAccount.currentBalance)}",
                     style = MaterialTheme.typography.titleSmall,
                     color = LocalCustomColors.current.primaryColor
                 )

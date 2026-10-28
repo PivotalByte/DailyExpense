@@ -6,7 +6,8 @@ import com.dailyexpense.data.models.CategorySummary
 import com.dailyexpense.data.models.Duration
 import com.dailyexpense.data.models.TransactionCategorySummary
 import com.dailyexpense.data.models.TransactionStats
-import com.dailyexpense.data.repository.DatabaseRepository
+import com.dailyexpense.data.repository.CategoryRepository
+import com.dailyexpense.data.repository.TransactionRepository
 import com.dailyexpense.utils.DateUtil.getThisWeekRange
 import com.dailyexpense.utils.extensions.getDateRange
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,7 +27,8 @@ import javax.inject.Inject
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class AnalyticsViewModel @Inject constructor(
-    private val repository: DatabaseRepository,
+    private val transactionRepository: TransactionRepository,
+    private val categoryRepository: CategoryRepository,
 ) : ViewModel() {
     private val _startDate = MutableStateFlow(getThisWeekRange().first)
     private val _endDate = MutableStateFlow(getThisWeekRange().second)
@@ -39,48 +41,48 @@ class AnalyticsViewModel @Inject constructor(
     val totalExpense: StateFlow<Double> = combine(_startDate, _endDate) { start, end ->
         start to end
     }.flatMapLatest { (start, end) ->
-        repository.getTotalExpenseForRange(start, end)
+        transactionRepository.getTotalExpenseForRange(start, end)
     }.stateIn(viewModelScope, SharingStarted.Lazily, 0.0)
 
     val totalIncome: StateFlow<Double> = combine(_startDate, _endDate) { start, end ->
         start to end
     }.flatMapLatest { (start, end) ->
-        repository.getTotalIncome(start, end)
+        transactionRepository.getTotalIncome(start, end)
     }.stateIn(viewModelScope, SharingStarted.Lazily, 0.0)
 
     val categoriesExpenseSummary: StateFlow<List<CategorySummary>> =
         combine(_startDate, _endDate) { start, end ->
             start to end
         }.flatMapLatest { (start, end) ->
-            repository.getCategoryExpenseSummary(start, end)
+            categoryRepository.getCategoryExpenseSummary(start, end)
         }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     val categoriesIncomeSummary: StateFlow<List<CategorySummary>> =
         combine(_startDate, _endDate) { start, end ->
             start to end
         }.flatMapLatest { (start, end) ->
-            repository.getCategoryIncomeSummary(start, end)
+            categoryRepository.getCategoryIncomeSummary(start, end)
         }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     val transactionCategoriesExpenseSummary: StateFlow<List<TransactionCategorySummary>> =
         combine(_startDate, _endDate) { start, end ->
             start to end
         }.flatMapLatest { (start, end) ->
-            repository.getTransactionCategoryExpenseSummary(start, end)
+            transactionRepository.getTransactionCategoryExpenseSummary(start, end)
         }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     val transactionCategoriesIncomeSummary: StateFlow<List<TransactionCategorySummary>> =
         combine(_startDate, _endDate) { start, end ->
             start to end
         }.flatMapLatest { (start, end) ->
-            repository.getTransactionCategoryIncomeSummary(start, end)
+            transactionRepository.getTransactionCategoryIncomeSummary(start, end)
         }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     val stats: StateFlow<TransactionStats> =
         combine(_startDate, _endDate) { start, end ->
             start to end
         }.flatMapLatest { (start, end) ->
-            repository.getStats(start, end)
+            transactionRepository.getStats(start, end)
         }.stateIn(viewModelScope, SharingStarted.Lazily, TransactionStats())
 
     fun updateDuration(duration: Duration) {

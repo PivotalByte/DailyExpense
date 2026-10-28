@@ -24,7 +24,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.dailyexpense.data.room.entity.AccountEntity
 import com.dailyexpense.ui.theme.ExpenseColor
-import com.dailyexpense.ui.theme.LocalCustomColors
 
 @Composable
 fun DeleteAccountBottomSheet(

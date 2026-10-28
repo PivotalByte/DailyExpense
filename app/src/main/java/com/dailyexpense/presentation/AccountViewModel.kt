@@ -2,7 +2,8 @@ package com.dailyexpense.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dailyexpense.data.repository.DatabaseRepository
+import com.dailyexpense.data.models.AccountWithBalance
+import com.dailyexpense.data.repository.AccountRepository
 import com.dailyexpense.data.room.entity.AccountEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,15 +11,16 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
 class AccountViewModel @Inject constructor(
-    private val repository: DatabaseRepository
+    private val repository: AccountRepository
 ) : ViewModel() {
 
     // State for account list screen
-    val accounts: StateFlow<List<AccountEntity>> =
+    val accounts: StateFlow<List<AccountWithBalance>> =
         repository.getAllAccounts()
             .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
@@ -38,7 +40,8 @@ class AccountViewModel @Inject constructor(
     private val _saveResult = MutableStateFlow<SaveResult?>(null)
     val saveResult: StateFlow<SaveResult?> = _saveResult
 
-    private val _currentAccountId = MutableStateFlow(-1)
+    // 0 means a new account; Room assigns the id on insert
+    private val _currentAccountId = MutableStateFlow(0)
 
     private val _currentAccount = MutableStateFlow<AccountEntity?>(null)
     val currentAccount: StateFlow<AccountEntity?> = _currentAccount
@@ -64,13 +67,13 @@ class AccountViewModel @Inject constructor(
     fun loadAccount(accountId: Int) {
         if (accountId > 0) {
             viewModelScope.launch {
-                repository.getAccountById(accountId)?.let { account ->
+                repository.getAccountById(accountId)?.let { (account, currentBalance) ->
                     _currentAccount.value = account
                     _currentAccountId.value = account.accountId
                     _accountHolderName.value = account.accountHolderName
                     _accountBankName.value = account.accountBankName
                     _accountNumber.value = account.accountNumber
-                    _balance.value = account.balance.toString()
+                    _balance.value = String.format(Locale.US, "%.2f", currentBalance)
                 }
             }
         }
@@ -87,7 +90,8 @@ class AccountViewModel @Inject constructor(
                 ValidationResult(false, "Account number is required")
             balance.value.isBlank() || balance.value.toDoubleOrNull() == null ->
                 ValidationResult(false, "Valid balance is required")
-            balance.value.toDouble() < 0 ->
+            // An existing account can legitimately be overdrawn by its transactions
+            balance.value.toDouble() < 0 && _currentAccountId.value <= 0 ->
                 ValidationResult(false, "Balance cannot be negative")
             else -> ValidationResult(true, "")
         }
@@ -108,12 +112,14 @@ class AccountViewModel @Inject constructor(
                     accountHolderName = accountHolderName.value.trim(),
                     accountBankName = accountBankName.value.trim(),
                     accountNumber = accountNumber.value.trim(),
-                    balance = balance.value.toDouble()
+                    openingBalance = 0.0
                 )
-                repository.insertAccount(account)
+                repository.saveAccount(account, currentBalance = balance.value.toDouble())
                 _saveResult.value = SaveResult.Success
                 onSuccess()
-            } catch (e: Exception) {
+            } catch (e: android.database.sqlite.SQLiteException) {
+                _saveResult.value = SaveResult.Error("Failed to save: ${e.message}")
+            } catch (e: IllegalStateException) {
                 _saveResult.value = SaveResult.Error("Failed to save: ${e.message}")
             }
         }
@@ -125,7 +131,9 @@ class AccountViewModel @Inject constructor(
             try {
                 repository.deleteAccount(account)
                 onSuccess()
-            } catch (e: Exception) {
+            } catch (e: android.database.sqlite.SQLiteException) {
+                _saveResult.value = SaveResult.Error("Failed to delete: ${e.message}")
+            } catch (e: IllegalStateException) {
                 _saveResult.value = SaveResult.Error("Failed to delete: ${e.message}")
             }
         }
@@ -140,7 +148,7 @@ class AccountViewModel @Inject constructor(
         _accountBankName.value = ""
         _accountNumber.value = ""
         _balance.value = ""
-        _currentAccountId.value = -1
+        _currentAccountId.value = 0
         _currentAccount.value = null
         _saveResult.value = null
     }

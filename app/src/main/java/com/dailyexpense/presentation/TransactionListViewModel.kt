@@ -6,7 +6,7 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.dailyexpense.data.models.FilterState
 import com.dailyexpense.data.models.SortState
-import com.dailyexpense.data.repository.DatabaseRepository
+import com.dailyexpense.data.repository.TransactionRepository
 import com.dailyexpense.data.room.entity.TransactionEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -22,7 +22,7 @@ import javax.inject.Inject
 @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 @HiltViewModel
 class TransactionListViewModel @Inject constructor(
-    private val repository: DatabaseRepository
+    private val repository: TransactionRepository
 ) : ViewModel() {
 
     private val searchQuery = MutableStateFlow(value = "")

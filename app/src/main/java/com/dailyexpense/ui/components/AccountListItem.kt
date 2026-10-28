@@ -17,16 +17,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.dailyexpense.data.room.entity.AccountEntity
+import com.dailyexpense.data.models.AccountWithBalance
 import com.dailyexpense.ui.theme.LocalCustomColors
 import com.dailyexpense.utils.clickable
 import java.util.Locale
 
 @Composable
 fun AccountListItem(
-    account: AccountEntity,
+    accountWithBalance: AccountWithBalance,
     onClick: () -> Unit
 ) {
+    val account = accountWithBalance.account
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -70,7 +71,7 @@ fun AccountListItem(
                 horizontalAlignment = Alignment.End
             ) {
                 Text(
-                    text = "₹${String.format(Locale.US, "%.2f", account.balance)}",
+                    text = "₹${String.format(Locale.US, "%.2f", accountWithBalance.currentBalance)}",
                     style = MaterialTheme.typography.titleLarge,
                     color = LocalCustomColors.current.primaryColor,
                     fontWeight = FontWeight.Bold

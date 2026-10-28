@@ -149,7 +149,7 @@ interface TransactionDao {
         (SUM(CASE WHEN transactionType = :incomeType THEN amount ELSE 0 END) /
          NULLIF(COUNT(CASE WHEN transactionType = :incomeType THEN 1 END), 0)) AS avgIncomePerTransaction,
 
-        ABS(MIN(CASE WHEN transactionType = :expenseType THEN amount END)) AS maxExpense,
+        MAX(CASE WHEN transactionType = :expenseType THEN ABS(amount) END) AS maxExpense,
         MAX(CASE WHEN transactionType = :incomeType THEN amount END) AS maxIncome
 
     FROM DE_transaction

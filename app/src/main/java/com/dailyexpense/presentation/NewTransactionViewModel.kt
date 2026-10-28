@@ -4,8 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dailyexpense.data.enums.TransactionCategory
 import com.dailyexpense.data.enums.TransactionType
-import com.dailyexpense.data.repository.DatabaseRepository
-import com.dailyexpense.data.room.entity.AccountEntity
+import com.dailyexpense.data.repository.AccountRepository
+import com.dailyexpense.data.repository.CategoryRepository
+import com.dailyexpense.data.repository.TagRepository
+import com.dailyexpense.data.repository.TransactionRepository
+import com.dailyexpense.data.models.AccountWithBalance
 import com.dailyexpense.data.room.entity.CategoryEntity
 import com.dailyexpense.data.room.entity.TagEntity
 import com.dailyexpense.data.room.entity.TransactionEntity
@@ -22,7 +25,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class NewTransactionViewModel @Inject constructor(
-    private val repository: DatabaseRepository
+    private val transactionRepository: TransactionRepository,
+    private val categoryRepository: CategoryRepository,
+    private val tagRepository: TagRepository,
+    accountRepository: AccountRepository
 ) : ViewModel() {
 
     private val _transactionTypeState = MutableStateFlow(TransactionType.EXPENSE)
@@ -34,8 +40,8 @@ class NewTransactionViewModel @Inject constructor(
     private val _selectedCategoryState = MutableStateFlow<CategoryEntity?>(null)
     val selectedCategoryState: StateFlow<CategoryEntity?> = _selectedCategoryState
 
-    private val _selectedAccountState = MutableStateFlow<AccountEntity?>(null)
-    val selectedAccountState: StateFlow<AccountEntity?> = _selectedAccountState
+    private val _selectedAccountState = MutableStateFlow<AccountWithBalance?>(null)
+    val selectedAccountState: StateFlow<AccountWithBalance?> = _selectedAccountState
 
     private val _selectedPaymentMethodState = MutableStateFlow<TransactionCategory?>(null)
     val selectedPaymentMethodState: StateFlow<TransactionCategory?> = _selectedPaymentMethodState
@@ -62,9 +68,9 @@ class NewTransactionViewModel @Inject constructor(
     val suggestedTagsState: StateFlow<List<TagEntity>> =
         tagSearchQueryState.flatMapLatest { query ->
             if (query.isBlank()) {
-                repository.getAllTags()
+                tagRepository.getAllTags()
             } else {
-                repository.searchTags(query)
+                tagRepository.searchTags(query)
             }
         }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
@@ -72,14 +78,14 @@ class NewTransactionViewModel @Inject constructor(
     val categoriesState: StateFlow<List<CategoryEntity>> =
         transactionTypeState.flatMapLatest { type ->
             if (type == TransactionType.NEUTRAL) {
-                repository.getAllCategories()
+                categoryRepository.getAllCategories()
             } else {
-                repository.getCategoriesByType(type)
+                categoryRepository.getCategoriesByType(type)
             }
         }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
-    val accountsState: StateFlow<List<AccountEntity>> =
-        repository.getAllAccounts()
+    val accountsState: StateFlow<List<AccountWithBalance>> =
+        accountRepository.getAllAccounts()
             .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     private val _saveResultState = MutableStateFlow<SaveResult?>(null)
@@ -101,7 +107,7 @@ class NewTransactionViewModel @Inject constructor(
         _selectedCategoryState.value = category
     }
 
-    fun updateSelectedAccount(account: AccountEntity) {
+    fun updateSelectedAccount(account: AccountWithBalance) {
         _selectedAccountState.value = account
     }
 
@@ -140,7 +146,7 @@ class NewTransactionViewModel @Inject constructor(
     fun createAndAddTag(tagName: String) {
         if (tagName.isNotBlank()) {
             viewModelScope.launch {
-                val tag = repository.getOrCreateTag(tagName.trim())
+                val tag = tagRepository.getOrCreateTag(tagName.trim())
                 addTag(tag)
             }
         }
@@ -175,6 +181,10 @@ class NewTransactionViewModel @Inject constructor(
                 _saveResultState.value = SaveResult.Error(validation.message)
                 return@launch
             }
+            // Non-null once validation has passed
+            val category = selectedCategoryState.value ?: return@launch
+            val account = selectedAccountState.value ?: return@launch
+            val paymentMethod = selectedPaymentMethodState.value ?: return@launch
 
             // Combine date and time into a single timestamp
             val calendar = java.util.Calendar.getInstance()
@@ -186,20 +196,20 @@ class NewTransactionViewModel @Inject constructor(
 
             val transaction = TransactionEntity(
                 title = notesState.value,
-                categoryId = selectedCategoryState.value!!.categoryId,
-                accountId = selectedAccountState.value!!.accountId,
+                categoryId = category.categoryId,
+                accountId = account.account.accountId,
                 date = Date(calendar.timeInMillis),
                 transactionType = transactionTypeState.value,
-                transactionCategory = selectedPaymentMethodState.value!!,
+                transactionCategory = paymentMethod,
                 amount = amountState.value.toDouble()
             )
 
             try {
                 if (selectedTagsState.value.isNotEmpty()) {
                     val tagIds = selectedTagsState.value.map { it.tagId }
-                    repository.insertTransactionWithTags(transaction, tagIds)
+                    transactionRepository.insertTransactionWithTags(transaction, tagIds)
                 } else {
-                    repository.insertTransaction(transaction)
+                    transactionRepository.insertTransaction(transaction)
                 }
                 _saveResultState.value = SaveResult.Success
                 onSuccess()

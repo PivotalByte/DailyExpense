@@ -24,7 +24,7 @@ import com.dailyexpense.data.room.junctions.TransactionTagCrossRef
         TagEntity::class,
         TransactionTagCrossRef::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 @TypeConverters(

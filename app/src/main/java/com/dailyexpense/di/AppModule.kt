@@ -34,6 +34,48 @@ object AppModule {
         }
     }
 
+    private val MIGRATION_2_3 = object : Migration(2, 3) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            // Seed data stored expenses as negative amounts while the app saved them positive.
+            // The transaction type now carries the sign, so every amount is stored positive.
+            db.execSQL("UPDATE DE_transaction SET amount = ABS(amount)")
+
+            // accountId was not auto-generated, so every account added in-app was saved with id -1
+            // and overwrote the previous one. Move any such row (and its transactions) to a real id.
+            val invalidIds = db.query("SELECT accountId FROM DE_account WHERE accountId <= 0").use { cursor ->
+                buildList { while (cursor.moveToNext()) add(cursor.getInt(0)) }
+            }
+            invalidIds.forEach { oldId ->
+                val newId = db.query("SELECT COALESCE(MAX(accountId), 0) + 1 FROM DE_account").use { cursor ->
+                    cursor.moveToFirst()
+                    cursor.getInt(0)
+                }
+                db.execSQL(
+                    """
+                    INSERT INTO DE_account (accountId, accountHolderName, accountBankName, accountNumber, balance)
+                    SELECT ?, accountHolderName, accountBankName, accountNumber, balance
+                    FROM DE_account WHERE accountId = ?
+                    """.trimIndent(),
+                    arrayOf(newId, oldId)
+                )
+                db.execSQL("UPDATE DE_transaction SET accountId = ? WHERE accountId = ?", arrayOf(newId, oldId))
+                db.execSQL("DELETE FROM DE_account WHERE accountId = ?", arrayOf(oldId))
+            }
+
+            // The balance column becomes the opening balance; the current balance is now derived
+            // from transactions. Rebase it so every account shows the same balance as before.
+            db.execSQL(
+                """
+                UPDATE DE_account SET balance = balance - COALESCE((
+                    SELECT SUM(CASE WHEN t.transactionType = 'INCOME' THEN t.amount
+                                    WHEN t.transactionType = 'EXPENSE' THEN -t.amount ELSE 0 END)
+                    FROM DE_transaction t WHERE t.accountId = DE_account.accountId
+                ), 0)
+                """.trimIndent()
+            )
+        }
+    }
+
     @Provides
     @Singleton
     fun provideDatabase(
@@ -45,7 +87,7 @@ object AppModule {
             "daily_expense_db"
         )
             .createFromAsset("database/daily_expense_v1.db")
-            .addMigrations(MIGRATION_1_2)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
             .build()
     }
 
