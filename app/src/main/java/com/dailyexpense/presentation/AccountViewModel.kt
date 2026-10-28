@@ -46,6 +46,10 @@ class AccountViewModel @Inject constructor(
     private val _currentAccount = MutableStateFlow<AccountEntity?>(null)
     val currentAccount: StateFlow<AccountEntity?> = _currentAccount
 
+    // Deleting an account cascades to its transactions, so the delete prompt shows this count
+    private val _currentAccountTransactionCount = MutableStateFlow(0)
+    val currentAccountTransactionCount: StateFlow<Int> = _currentAccountTransactionCount
+
     // Update functions
     fun updateAccountHolderName(name: String) {
         _accountHolderName.value = name
@@ -67,8 +71,9 @@ class AccountViewModel @Inject constructor(
     fun loadAccount(accountId: Int) {
         if (accountId > 0) {
             viewModelScope.launch {
-                repository.getAccountById(accountId)?.let { (account, currentBalance) ->
+                repository.getAccountById(accountId)?.let { (account, currentBalance, transactionCount) ->
                     _currentAccount.value = account
+                    _currentAccountTransactionCount.value = transactionCount
                     _currentAccountId.value = account.accountId
                     _accountHolderName.value = account.accountHolderName
                     _accountBankName.value = account.accountBankName
@@ -150,6 +155,7 @@ class AccountViewModel @Inject constructor(
         _balance.value = ""
         _currentAccountId.value = 0
         _currentAccount.value = null
+        _currentAccountTransactionCount.value = 0
         _saveResult.value = null
     }
 

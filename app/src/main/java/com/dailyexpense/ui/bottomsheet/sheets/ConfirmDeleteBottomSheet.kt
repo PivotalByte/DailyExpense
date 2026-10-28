@@ -22,12 +22,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.dailyexpense.data.room.entity.AccountEntity
 import com.dailyexpense.ui.theme.ExpenseColor
 
 @Composable
-fun DeleteAccountBottomSheet(
-    account: AccountEntity,
+fun ConfirmDeleteBottomSheet(
+    title: String,
+    message: String,
     onConfirm: () -> Unit,
     closeSheet: () -> Unit
 ) {
@@ -49,7 +49,7 @@ fun DeleteAccountBottomSheet(
                 modifier = Modifier.padding(8.dp)
             )
             Text(
-                text = "Delete Account?",
+                text = title,
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onSurface,
                 fontWeight = FontWeight.Bold
@@ -57,7 +57,7 @@ fun DeleteAccountBottomSheet(
         }
 
         Text(
-            text = "Are you sure you want to delete ${account.accountBankName}?",
+            text = message,
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurface
         )

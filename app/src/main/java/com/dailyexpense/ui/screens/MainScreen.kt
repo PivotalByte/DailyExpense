@@ -23,15 +23,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.dailyexpense.data.models.MainTab
 import com.dailyexpense.navigation.Route
+import com.dailyexpense.presentation.FilterViewModel
 import com.dailyexpense.ui.components.CurvyBottomBar
 import com.dailyexpense.ui.theme.LocalCustomColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(navController: NavHostController) {
+fun MainScreen(
+    navController: NavHostController,
+    // Scoped to the Main back stack entry, so it is the same instance the Transactions tab uses
+    filterViewModel: FilterViewModel = hiltViewModel()
+) {
     var selectedTab by rememberSaveable(
         stateSaver = androidx.compose.runtime.saveable.Saver(
             save = { tab ->
@@ -68,7 +74,7 @@ fun MainScreen(navController: NavHostController) {
             ) {
                 FloatingActionButton(
                     onClick = {
-                        navController.navigate(Route.NewTransaction.route)
+                        navController.navigate(Route.NewTransaction.createRoute())
                     },
                     containerColor = LocalCustomColors.current.primaryColor
                 ) {
@@ -94,8 +100,15 @@ fun MainScreen(navController: NavHostController) {
             contentAlignment = Alignment.TopStart
         ) {
             when (selectedTab) {
-                MainTab.Dashboard -> DashboardScreen(navController = navController)
-                MainTab.Transactions -> TransactionListScreen()
+                MainTab.Dashboard -> DashboardScreen(
+                    navController = navController,
+                    onSeeAllClick = { selectedTab = MainTab.Transactions },
+                    onCategoryClick = { category ->
+                        filterViewModel.showCategory(category.categoryId)
+                        selectedTab = MainTab.Transactions
+                    }
+                )
+                MainTab.Transactions -> TransactionListScreen(navController = navController)
                 MainTab.Analytics -> AnalyticsScreen()
                 MainTab.Account -> Text(text = "Current tab: ${stringResource(id = selectedTab.labelRes)}")
             }

@@ -29,7 +29,8 @@ interface AccountDao {
     fun getTotalBalance(): Flow<Double>
 
     @Query(
-        """SELECT a.*, a.balance + COALESCE(SUM($NET_AMOUNT), 0) AS currentBalance
+        """SELECT a.*, a.balance + COALESCE(SUM($NET_AMOUNT), 0) AS currentBalance,
+        COUNT(t.transactionId) AS transactionCount
         FROM DE_account a
         LEFT JOIN DE_transaction t ON t.accountId = a.accountId
         GROUP BY a.accountId"""
@@ -37,7 +38,8 @@ interface AccountDao {
     fun getAllAccountsWithBalance(): Flow<List<AccountWithBalance>>
 
     @Query(
-        """SELECT a.*, a.balance + COALESCE(SUM($NET_AMOUNT), 0) AS currentBalance
+        """SELECT a.*, a.balance + COALESCE(SUM($NET_AMOUNT), 0) AS currentBalance,
+        COUNT(t.transactionId) AS transactionCount
         FROM DE_account a
         LEFT JOIN DE_transaction t ON t.accountId = a.accountId
         WHERE a.accountId = :accountId

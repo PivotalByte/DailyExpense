@@ -1,5 +1,6 @@
 package com.dailyexpense.presentation
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dailyexpense.data.enums.TransactionCategory
@@ -12,6 +13,8 @@ import com.dailyexpense.data.models.AccountWithBalance
 import com.dailyexpense.data.room.entity.CategoryEntity
 import com.dailyexpense.data.room.entity.TagEntity
 import com.dailyexpense.data.room.entity.TransactionEntity
+import com.dailyexpense.navigation.ARG_TRANSACTION_ID
+import com.dailyexpense.navigation.NO_ID
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,6 +23,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.util.Date
 import javax.inject.Inject
 
@@ -28,8 +33,13 @@ class NewTransactionViewModel @Inject constructor(
     private val transactionRepository: TransactionRepository,
     private val categoryRepository: CategoryRepository,
     private val tagRepository: TagRepository,
-    accountRepository: AccountRepository
+    private val accountRepository: AccountRepository,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
+
+    // Id of the transaction being edited, or NO_ID when adding a new one
+    private val editingTransactionId: Int = savedStateHandle[ARG_TRANSACTION_ID] ?: NO_ID
+    val isEditMode: Boolean = editingTransactionId > 0
 
     private val _transactionTypeState = MutableStateFlow(TransactionType.EXPENSE)
     val transactionTypeState: StateFlow<TransactionType> = _transactionTypeState
@@ -90,6 +100,32 @@ class NewTransactionViewModel @Inject constructor(
 
     private val _saveResultState = MutableStateFlow<SaveResult?>(null)
     val saveResultState: StateFlow<SaveResult?> = _saveResultState
+
+    init {
+        if (isEditMode) loadTransaction(editingTransactionId)
+    }
+
+    private fun loadTransaction(transactionId: Int) {
+        viewModelScope.launch {
+            val full = transactionRepository.getTransactionById(transactionId) ?: return@launch
+            val transaction = full.transaction
+            val calendar = java.util.Calendar.getInstance().apply { time = transaction.date }
+
+            _transactionTypeState.value = transaction.transactionType
+            _amountState.value = BigDecimal.valueOf(transaction.amount)
+                .setScale(2, RoundingMode.HALF_UP)
+                .stripTrailingZeros()
+                .toPlainString()
+            _notesState.value = transaction.title
+            _selectedCategoryState.value = full.category
+            _selectedAccountState.value = accountRepository.getAccountById(transaction.accountId)
+            _selectedPaymentMethodState.value = transaction.transactionCategory
+            _dateState.value = transaction.date.time
+            _hourState.value = calendar.get(java.util.Calendar.HOUR_OF_DAY)
+            _minuteState.value = calendar.get(java.util.Calendar.MINUTE)
+            _selectedTagsState.value = full.tags
+        }
+    }
 
     fun updateTransactionType(type: TransactionType) {
         _transactionTypeState.value = type
@@ -195,6 +231,7 @@ class NewTransactionViewModel @Inject constructor(
             calendar.set(java.util.Calendar.MILLISECOND, 0)
 
             val transaction = TransactionEntity(
+                transactionId = if (isEditMode) editingTransactionId else 0,
                 title = notesState.value,
                 categoryId = category.categoryId,
                 accountId = account.account.accountId,
@@ -205,11 +242,11 @@ class NewTransactionViewModel @Inject constructor(
             )
 
             try {
-                if (selectedTagsState.value.isNotEmpty()) {
-                    val tagIds = selectedTagsState.value.map { it.tagId }
-                    transactionRepository.insertTransactionWithTags(transaction, tagIds)
-                } else {
-                    transactionRepository.insertTransaction(transaction)
+                val tagIds = selectedTagsState.value.map { it.tagId }
+                when {
+                    isEditMode -> transactionRepository.updateTransactionWithTags(transaction, tagIds)
+                    tagIds.isNotEmpty() -> transactionRepository.insertTransactionWithTags(transaction, tagIds)
+                    else -> transactionRepository.insertTransaction(transaction)
                 }
                 _saveResultState.value = SaveResult.Success
                 onSuccess()

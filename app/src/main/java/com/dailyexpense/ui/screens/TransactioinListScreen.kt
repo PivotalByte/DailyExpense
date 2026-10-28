@@ -22,7 +22,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.navigation.NavHostController
 import com.dailyexpense.data.models.Duration
+import com.dailyexpense.navigation.Route
 import com.dailyexpense.presentation.FilterViewModel
 import com.dailyexpense.presentation.SortViewModel
 import com.dailyexpense.presentation.TransactionListViewModel
@@ -38,6 +40,7 @@ import com.dailyexpense.ui.components.TransactionRow
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TransactionListScreen(
+    navController: NavHostController? = null,
     viewModel: TransactionListViewModel = hiltViewModel(),
     filterViewModel: FilterViewModel = hiltViewModel(),
     sortViewModel: SortViewModel = hiltViewModel()
@@ -45,6 +48,8 @@ fun TransactionListScreen(
     val filterState = filterViewModel.filterState
     val sortState = sortViewModel.sortState
     val filter = filterState.collectAsState().value
+    val categories by filterViewModel.categories.collectAsState()
+    val categoryNames = remember(categories) { categories.associate { it.categoryId to it.name } }
 
     val transactionPagingItems = remember {
         viewModel.getTransactionList(
@@ -107,7 +112,13 @@ fun TransactionListScreen(
             ) {
                 items(transactionPagingItems.itemCount) { index ->
                     transactionPagingItems[index]?.let { transaction ->
-                        TransactionRow(transactionEntity = transaction)
+                        TransactionRow(
+                            transactionEntity = transaction,
+                            categoryName = categoryNames[transaction.categoryId],
+                            onClick = {
+                                navController?.navigate(Route.TransactionDetail.createRoute(transaction.transactionId))
+                            }
+                        )
                     }
                 }
 

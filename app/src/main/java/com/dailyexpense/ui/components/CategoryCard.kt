@@ -27,8 +27,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.graphics.toColorInt
-import com.dailyexpense.R
 import com.dailyexpense.data.enums.TransactionType
 import com.dailyexpense.data.room.entity.CategoryEntity
 
@@ -38,22 +36,9 @@ fun CategoryCard(
     isSelected: Boolean = false,
     onCategoryClick: (CategoryEntity) -> Unit
 ) {
-    val backgroundColor = try {
-        Color(category.colorCode.toColorInt())
-    } catch (_: IllegalArgumentException) {
-        Color.White
-    }
+    val backgroundColor = categoryColor(category.colorCode, fallback = Color.White)
 
-    val iconResId = when (category.iconResName) {
-        "ic_category_groceries" -> R.drawable.ic_category_groceries
-        "ic_category_medical" -> R.drawable.ic_category_medical
-        "ic_category_fuel_transport" -> R.drawable.ic_category_fuel_transport
-        "ic_category_restaurant" -> R.drawable.ic_category_restaurant
-        "ic_category_salary" -> R.drawable.ic_category_salary
-        "ic_category_business" -> R.drawable.ic_category_business
-        "ic_category_investment" -> R.drawable.ic_category_investment
-        else -> R.drawable.ic_category_more
-    }
+    val iconResId = categoryIconRes(category.iconResName)
 
     Box(
         modifier = Modifier.aspectRatio(1f)

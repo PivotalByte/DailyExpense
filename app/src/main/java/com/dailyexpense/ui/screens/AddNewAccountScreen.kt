@@ -32,15 +32,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.dailyexpense.R
 import com.dailyexpense.presentation.AccountViewModel
 import com.dailyexpense.ui.bottomsheet.BottomSheetHost
 import com.dailyexpense.ui.bottomsheet.factory.rememberCustomBottomSheetController
-import com.dailyexpense.ui.bottomsheet.sheets.DeleteAccountBottomSheet
+import com.dailyexpense.ui.bottomsheet.sheets.ConfirmDeleteBottomSheet
 import com.dailyexpense.ui.components.CustomTextField
 import com.dailyexpense.ui.components.CustomToolbar
 import com.dailyexpense.ui.theme.LocalCustomColors
@@ -57,6 +60,7 @@ fun AddNewAccountScreen(
     val balance by accountViewModel.balance.collectAsState()
     val saveResult by accountViewModel.saveResult.collectAsState()
     val currentAccount by accountViewModel.currentAccount.collectAsState()
+    val transactionCount by accountViewModel.currentAccountTransactionCount.collectAsState()
 
     val isExistingAccount = accountId > 0
     var isEditMode by remember { mutableStateOf(!isExistingAccount) }
@@ -91,6 +95,19 @@ fun AddNewAccountScreen(
     }
 
     BottomSheetHost(controller = bottomSheetController) {
+        val deleteTitle = stringResource(id = R.string.title_delete_account)
+        val deleteMessage = currentAccount?.let { account ->
+            if (transactionCount == 0) {
+                stringResource(id = R.string.message_delete_account_empty, account.accountBankName)
+            } else {
+                pluralStringResource(
+                    id = R.plurals.message_delete_account,
+                    count = transactionCount,
+                    account.accountBankName,
+                    transactionCount
+                )
+            }
+        }.orEmpty()
         AddNewAccountScreenContent(
             isExistingAccount = isExistingAccount,
             isEditMode = isEditMode,
@@ -121,8 +138,9 @@ fun AddNewAccountScreen(
             onDeleteClick = {
                 currentAccount?.let { account ->
                     bottomSheetController.show {
-                        DeleteAccountBottomSheet(
-                            account = account,
+                        ConfirmDeleteBottomSheet(
+                            title = deleteTitle,
+                            message = deleteMessage,
                             onConfirm = {
                                 accountViewModel.deleteAccount(account) {
                                     navController.popBackStack()

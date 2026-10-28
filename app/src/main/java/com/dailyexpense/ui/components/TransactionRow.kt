@@ -33,10 +33,15 @@ import com.dailyexpense.ui.theme.IncomeColor
 import com.dailyexpense.ui.theme.LocalCustomColors
 import com.dailyexpense.ui.theme.NeutralColor
 import com.dailyexpense.utils.DateUtil.toOrdinalAnnotatedDate
+import com.dailyexpense.utils.clickable
 import java.util.Date
 
 @Composable
-fun TransactionRow(transactionEntity: TransactionEntity) {
+fun TransactionRow(
+    transactionEntity: TransactionEntity,
+    categoryName: String? = null,
+    onClick: (() -> Unit)? = null
+) {
     val (iconRes, bgColor) = when (transactionEntity.transactionType) {
         TransactionType.INCOME -> {
             R.drawable.ic_income to IncomeColor.copy(alpha = 0.25f)
@@ -52,7 +57,9 @@ fun TransactionRow(transactionEntity: TransactionEntity) {
     }
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier),
         colors = CardDefaults.cardColors(
             containerColor = LocalCustomColors.current.cardBg,
             contentColor = MaterialTheme.colorScheme.onSurfaceVariant
@@ -94,10 +101,11 @@ fun TransactionRow(transactionEntity: TransactionEntity) {
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
+                val paymentMode = transactionEntity.transactionCategory.getTransactionCategoryAsString(
+                    LocalContext.current
+                )
                 Text(
-                    text = transactionEntity.transactionCategory.getTransactionCategoryAsString(
-                        LocalContext.current
-                    ),
+                    text = if (categoryName != null) "$categoryName · $paymentMode" else paymentMode,
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

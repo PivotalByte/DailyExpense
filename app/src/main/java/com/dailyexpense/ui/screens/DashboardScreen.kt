@@ -1,6 +1,5 @@
 package com.dailyexpense.ui.screens
 
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,8 +15,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -36,12 +36,15 @@ import com.dailyexpense.ui.components.TransactionRow
 import com.dailyexpense.ui.theme.ExpenseColor
 import com.dailyexpense.ui.theme.IncomeColor
 import com.dailyexpense.ui.theme.LocalCustomColors
+import com.dailyexpense.utils.clickable
 import com.dailyexpense.utils.extensions.toIndianCurrencyFormat
 
 @Composable
 fun DashboardScreen(
     viewModel: DashboardViewModel = hiltViewModel(),
-    navController: NavHostController? = null
+    navController: NavHostController? = null,
+    onSeeAllClick: () -> Unit = {},
+    onCategoryClick: (CategoryEntity) -> Unit = {}
 ) {
     val categories by viewModel.categories.collectAsState()
     val recentTransactions by viewModel.recentTransactions.collectAsState()
@@ -57,6 +60,11 @@ fun DashboardScreen(
         totalIncome = totalIncome.toIndianCurrencyFormat(),
         onTotalBalanceClick = {
             navController?.navigate(Route.AccountList.route)
+        },
+        onSeeAllClick = onSeeAllClick,
+        onCategoryClick = onCategoryClick,
+        onTransactionClick = { transaction ->
+            navController?.navigate(Route.TransactionDetail.createRoute(transaction.transactionId))
         }
     )
 }
@@ -68,8 +76,12 @@ fun DashboardScreenView(
     totalBalance: String,
     totalExpense: String,
     totalIncome: String,
-    onTotalBalanceClick: () -> Unit = {}
+    onTotalBalanceClick: () -> Unit = {},
+    onSeeAllClick: () -> Unit = {},
+    onCategoryClick: (CategoryEntity) -> Unit = {},
+    onTransactionClick: (TransactionEntity) -> Unit = {}
 ) {
+    val categoryNames = remember(categories) { categories.associate { it.categoryId to it.name } }
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -140,21 +152,35 @@ fun DashboardScreenView(
         }
 
         item {
-            val context = LocalContext.current
-            CategoryGrid(categories = categories, onCategoryClick = { clickedCategory ->
-                Toast.makeText(context, clickedCategory.name, Toast.LENGTH_SHORT).show()
-            })
+            CategoryGrid(categories = categories, onCategoryClick = onCategoryClick)
         }
 
         item {
-            Text(
-                text = stringResource(id = R.string.label_recent_transactions),
-                style = MaterialTheme.typography.bodyLarge
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(id = R.string.label_recent_transactions),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                Text(
+                    text = stringResource(id = R.string.label_see_all),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = LocalCustomColors.current.primaryColor,
+                    modifier = Modifier.clickable(onClick = onSeeAllClick)
+                )
+            }
         }
 
         items(count = recentTransactions.size) { index ->
-            TransactionRow(transactionEntity = recentTransactions[index])
+            val transaction = recentTransactions[index]
+            TransactionRow(
+                transactionEntity = transaction,
+                categoryName = categoryNames[transaction.categoryId],
+                onClick = { onTransactionClick(transaction) }
+            )
         }
     }
 }

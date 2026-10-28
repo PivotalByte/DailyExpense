@@ -2,9 +2,11 @@ package com.dailyexpense.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dailyexpense.data.models.Duration
 import com.dailyexpense.data.models.FilterState
 import com.dailyexpense.data.repository.CategoryRepository
 import com.dailyexpense.data.repository.TagRepository
+import com.dailyexpense.utils.DateUtil.getThisMonthRange
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -24,6 +26,17 @@ class FilterViewModel @Inject constructor(
 
     fun updateFilter(newState: FilterState) {
         _filterState.value = newState
+    }
+
+    /** Replaces the filter with this month's transactions in a single category. */
+    fun showCategory(categoryId: Int) {
+        val (start, end) = getThisMonthRange()
+        _filterState.value = FilterState(
+            selectedDuration = Duration.ThisMonth,
+            selectedCategories = setOf(categoryId),
+            startDate = start,
+            endDate = end
+        )
     }
 
     val categories = categoryRepository.getAllCategories()

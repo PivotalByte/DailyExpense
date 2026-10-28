@@ -20,5 +20,6 @@ data class NewTransactionState(
     val transactionTypeChipData: List<TransactionTypeChipData>,
     val selectedTags: List<TagEntity>,
     val tagSearchQuery: String,
-    val suggestedTags: List<TagEntity>
+    val suggestedTags: List<TagEntity>,
+    val isEditMode: Boolean = false
 )

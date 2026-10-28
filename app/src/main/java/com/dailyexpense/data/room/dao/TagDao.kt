@@ -22,6 +22,9 @@ interface TagDao {
     @Query("SELECT * FROM DE_tags WHERE LOWER(name) = LOWER(:name)")
     suspend fun getTagByName(name: String): TagEntity?
 
+    @Query("DELETE FROM DE_transaction_tag_cross_ref WHERE transactionId = :transactionId")
+    suspend fun deleteTransactionTagCrossRefs(transactionId: Int)
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertTransactionTagCrossRef(crossRef: com.dailyexpense.data.room.junctions.TransactionTagCrossRef)
 }

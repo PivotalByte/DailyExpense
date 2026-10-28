@@ -2,6 +2,7 @@ package com.dailyexpense.data.repository
 
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
+import androidx.room.withTransaction
 import com.dailyexpense.data.enums.SortOption
 import com.dailyexpense.data.enums.SortOrder
 import com.dailyexpense.data.enums.TransactionType
@@ -12,8 +13,10 @@ import com.dailyexpense.data.models.TransactionCategorySummary
 import com.dailyexpense.data.models.TransactionStats
 import com.dailyexpense.data.room.dao.TagDao
 import com.dailyexpense.data.room.dao.TransactionDao
+import com.dailyexpense.data.room.db.AppDatabase
 import com.dailyexpense.data.room.entity.TransactionEntity
 import com.dailyexpense.data.room.junctions.TransactionTagCrossRef
+import com.dailyexpense.data.room.wrapper.TransactionFull
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -22,6 +25,13 @@ interface TransactionRepository {
     suspend fun insertTransaction(transactionEntity: TransactionEntity): Long
 
     suspend fun insertTransactionWithTags(transaction: TransactionEntity, tagIds: List<Int>): Long
+
+    /** Updates [transaction] in place and replaces its tags with [tagIds]. */
+    suspend fun updateTransactionWithTags(transaction: TransactionEntity, tagIds: List<Int>)
+
+    suspend fun getTransactionById(id: Int): TransactionFull?
+
+    fun observeTransactionById(id: Int): Flow<TransactionFull?>
 
     suspend fun deleteTransaction(transactionEntity: TransactionEntity)
 
@@ -48,6 +58,7 @@ interface TransactionRepository {
 
 @Singleton
 class RoomTransactionRepository @Inject constructor(
+    private val database: AppDatabase,
     private val transactionDao: TransactionDao,
     private val tagDao: TagDao
 ) : TransactionRepository {
@@ -55,18 +66,35 @@ class RoomTransactionRepository @Inject constructor(
     override suspend fun insertTransaction(transactionEntity: TransactionEntity): Long =
         transactionDao.insertTransaction(transactionEntity)
 
-    override suspend fun insertTransactionWithTags(transaction: TransactionEntity, tagIds: List<Int>): Long {
-        val transactionId = transactionDao.insertTransaction(transaction)
+    override suspend fun insertTransactionWithTags(transaction: TransactionEntity, tagIds: List<Int>): Long =
+        database.withTransaction {
+            val transactionId = transactionDao.insertTransaction(transaction)
+            insertTags(transactionId.toInt(), tagIds)
+            transactionId
+        }
+
+    override suspend fun updateTransactionWithTags(transaction: TransactionEntity, tagIds: List<Int>) =
+        database.withTransaction {
+            transactionDao.updateTransaction(transaction)
+            tagDao.deleteTransactionTagCrossRefs(transaction.transactionId)
+            insertTags(transaction.transactionId, tagIds)
+        }
+
+    private suspend fun insertTags(transactionId: Int, tagIds: List<Int>) {
         tagIds.forEach { tagId ->
             tagDao.insertTransactionTagCrossRef(
                 TransactionTagCrossRef(
-                    transactionId = transactionId.toInt(),
+                    transactionId = transactionId,
                     tagId = tagId
                 )
             )
         }
-        return transactionId
     }
+
+    override suspend fun getTransactionById(id: Int): TransactionFull? = transactionDao.getTransactionFullById(id)
+
+    override fun observeTransactionById(id: Int): Flow<TransactionFull?> =
+        transactionDao.observeTransactionFullById(id)
 
     override suspend fun deleteTransaction(transactionEntity: TransactionEntity) =
         transactionDao.deleteTransaction(transactionEntity)

@@ -79,4 +79,26 @@
     <string name="label_analytics">Analytics</string>
     <string name="label_account">Account</string>
 
+    <string name="title_new_transaction">New Transaction</string>
+    <string name="title_edit_transaction">Edit Transaction</string>
+    <string name="title_transaction_detail">Transaction Detail</string>
+    <string name="label_save_transaction">Save Transaction</string>
+    <string name="label_update_transaction">Update Transaction</string>
+    <string name="label_see_all">See all</string>
+    <string name="label_edit">Edit</string>
+    <string name="label_delete">Delete</string>
+    <string name="label_category">Category</string>
+    <string name="label_payment_mode">Payment mode</string>
+    <string name="label_date_time">Date &amp; time</string>
+    <string name="label_tags">Tags</string>
+    <string name="title_delete_transaction">Delete Transaction?</string>
+    <string name="message_delete_transaction">This transaction will be removed and your account balance updated.</string>
+    <string name="message_transaction_not_found">Transaction not found</string>
+    <string name="title_delete_account">Delete Account?</string>
+    <string name="message_delete_account_empty">Are you sure you want to delete %1$s?</string>
+    <plurals name="message_delete_account">
+        <item quantity="one">Deleting %1$s will also delete its %2$d transaction.</item>
+        <item quantity="other">Deleting %1$s will also delete its %2$d transactions.</item>
+    </plurals>
+
 </resources>

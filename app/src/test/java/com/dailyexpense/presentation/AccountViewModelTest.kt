@@ -89,13 +89,15 @@ class AccountViewModelTest {
                 accountNumber = "123",
                 openingBalance = 100.0
             ),
-            currentBalance = -250.5
+            currentBalance = -250.5,
+            transactionCount = 3
         )
         val repository = FakeAccountRepository(stored)
         val viewModel = AccountViewModel(repository)
 
         viewModel.loadAccount(4)
         assertEquals("-250.50", viewModel.balance.value)
+        assertEquals(3, viewModel.currentAccountTransactionCount.value)
 
         viewModel.saveAccount {}
 

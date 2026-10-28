@@ -7,6 +7,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.Update
 import com.dailyexpense.data.enums.TransactionCategory
 import com.dailyexpense.data.enums.TransactionType
 import com.dailyexpense.data.models.DailyTransactionSummary
@@ -22,6 +23,10 @@ interface TransactionDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTransaction(transactionEntity: TransactionEntity): Long
+
+    // @Update rather than REPLACE: a REPLACE deletes the row first, cascading away its tag links
+    @Update
+    suspend fun updateTransaction(transactionEntity: TransactionEntity)
 
     @Delete
     suspend fun deleteTransaction(transactionEntity: TransactionEntity)
@@ -92,7 +97,11 @@ interface TransactionDao {
 
     @Transaction
     @Query("SELECT * FROM DE_transaction WHERE transactionId = :id")
-    suspend fun getTransactionFullById(id: Int): TransactionFull
+    suspend fun getTransactionFullById(id: Int): TransactionFull?
+
+    @Transaction
+    @Query("SELECT * FROM DE_transaction WHERE transactionId = :id")
+    fun observeTransactionFullById(id: Int): Flow<TransactionFull?>
 
     @Transaction
     @Query("SELECT * FROM DE_transaction ORDER BY date DESC")

@@ -5,5 +5,6 @@ import com.dailyexpense.data.room.entity.AccountEntity
 
 data class AccountWithBalance(
     @Embedded val account: AccountEntity,
-    val currentBalance: Double
+    val currentBalance: Double,
+    val transactionCount: Int = 0
 )

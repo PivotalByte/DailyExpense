@@ -62,7 +62,8 @@ import com.dailyexpense.ui.components.CustomToolbar
 import com.dailyexpense.ui.components.TextChip
 import com.dailyexpense.ui.theme.DailyExpenseTheme
 import com.dailyexpense.ui.theme.LocalCustomColors
-import androidx.core.graphics.toColorInt
+import com.dailyexpense.ui.components.categoryColor
+import com.dailyexpense.ui.components.categoryIconRes
 import com.dailyexpense.ui.actions.NewTransactionActions
 import com.dailyexpense.ui.states.NewTransactionState
 import com.dailyexpense.utils.DateUtil.toOrdinalAnnotatedDate
@@ -133,7 +134,8 @@ fun NewTransactionScreen(
             transactionTypeChipData = transactionTypeChipData,
             selectedTags = selectedTags,
             tagSearchQuery = tagSearchQuery,
-            suggestedTags = suggestedTags
+            suggestedTags = suggestedTags,
+            isEditMode = newTransactionViewModel.isEditMode
         )
 
         val actions = NewTransactionActions(
@@ -232,7 +234,9 @@ fun NewTransactionScreenContent(
         verticalArrangement = Arrangement.Bottom
     ) {
         CustomToolbar(
-            title = "New Transaction",
+            title = stringResource(
+                id = if (state.isEditMode) R.string.title_edit_transaction else R.string.title_new_transaction
+            ),
             showBack = true,
             onBack = { navController.popBackStack() }
         )
@@ -354,7 +358,13 @@ fun NewTransactionScreenContent(
                         state.selectedPaymentMethod != null
                 ) {
                     Text(
-                        text = "Save Transaction",
+                        text = stringResource(
+                            id = if (state.isEditMode) {
+                                R.string.label_update_transaction
+                            } else {
+                                R.string.label_save_transaction
+                            }
+                        ),
                         style = MaterialTheme.typography.labelLarge,
                         color = Color.White
                     )
@@ -529,16 +539,7 @@ fun CategorySelectionField(
         )
 
         if (selectedCategory != null) {
-            val iconResId = when (selectedCategory.iconResName) {
-                "ic_category_groceries" -> R.drawable.ic_category_groceries
-                "ic_category_medical" -> R.drawable.ic_category_medical
-                "ic_category_fuel_transport" -> R.drawable.ic_category_fuel_transport
-                "ic_category_restaurant" -> R.drawable.ic_category_restaurant
-                "ic_category_salary" -> R.drawable.ic_category_salary
-                "ic_category_business" -> R.drawable.ic_category_business
-                "ic_category_investment" -> R.drawable.ic_category_investment
-                else -> R.drawable.ic_category_more
-            }
+            val iconResId = categoryIconRes(selectedCategory.iconResName)
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -548,11 +549,7 @@ fun CategorySelectionField(
                     modifier = Modifier
                         .size(40.dp)
                         .background(
-                            try {
-                                Color(selectedCategory.colorCode.toColorInt())
-                            } catch (_: IllegalArgumentException) {
-                                MaterialTheme.colorScheme.primary
-                            },
+                            categoryColor(selectedCategory.colorCode, fallback = MaterialTheme.colorScheme.primary),
                             RoundedCornerShape(8.dp)
                         ),
                     contentAlignment = Alignment.Center
@@ -725,7 +722,7 @@ fun TagSelectionSection(
 @Composable
 fun TagChip(
     tag: TagEntity,
-    onRemove: () -> Unit
+    onRemove: (() -> Unit)? = null
 ) {
     Row(
         modifier = Modifier
@@ -747,22 +744,24 @@ fun TagChip(
             style = MaterialTheme.typography.bodySmall,
             color = LocalCustomColors.current.primaryColor
         )
-        Box(
-            modifier = Modifier
-                .size(16.dp)
-                .background(
-                    color = LocalCustomColors.current.primaryColor.copy(alpha = 0.2f),
-                    shape = CircleShape
+        if (onRemove != null) {
+            Box(
+                modifier = Modifier
+                    .size(16.dp)
+                    .background(
+                        color = LocalCustomColors.current.primaryColor.copy(alpha = 0.2f),
+                        shape = CircleShape
+                    )
+                    .clickable { onRemove() },
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = "Remove tag",
+                    tint = LocalCustomColors.current.primaryColor,
+                    modifier = Modifier.size(12.dp)
                 )
-                .clickable { onRemove() },
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = Icons.Default.Close,
-                contentDescription = "Remove tag",
-                tint = LocalCustomColors.current.primaryColor,
-                modifier = Modifier.size(12.dp)
-            )
+            }
         }
     }
 }

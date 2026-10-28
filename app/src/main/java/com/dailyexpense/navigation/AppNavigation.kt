@@ -10,6 +10,7 @@ import com.dailyexpense.ui.screens.AccountListScreen
 import com.dailyexpense.ui.screens.AddNewAccountScreen
 import com.dailyexpense.ui.screens.MainScreen
 import com.dailyexpense.ui.screens.NewTransactionScreen
+import com.dailyexpense.ui.screens.TransactionDetailScreen
 
 @Composable
 fun AppNavigation(navController: NavHostController) {
@@ -20,8 +21,22 @@ fun AppNavigation(navController: NavHostController) {
         composable(Route.Main.route) {
             MainScreen(navController)
         }
-        composable(Route.NewTransaction.route) {
+        composable(
+            route = Route.NewTransaction.route,
+            arguments = listOf(
+                navArgument(ARG_TRANSACTION_ID) {
+                    type = NavType.IntType
+                    defaultValue = NO_ID
+                }
+            )
+        ) {
             NewTransactionScreen(navController)
+        }
+        composable(
+            route = Route.TransactionDetail.route,
+            arguments = listOf(navArgument(ARG_TRANSACTION_ID) { type = NavType.IntType })
+        ) {
+            TransactionDetailScreen(navController)
         }
         composable(Route.AccountList.route) {
             AccountListScreen(navController)
