@@ -19,6 +19,7 @@ class RoomAccountRepositoryTest {
         }
 
         override suspend fun deleteAccount(accountEntity: AccountEntity) = Unit
+        override suspend fun deleteAllAccounts() = Unit
         override fun getTotalBalance(): Flow<Double> = emptyFlow()
         override fun getAllAccountsWithBalance(): Flow<List<AccountWithBalance>> = emptyFlow()
         override suspend fun getAccountWithBalanceById(accountId: Int): AccountWithBalance? = null

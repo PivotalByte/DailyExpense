@@ -18,6 +18,10 @@ sealed class Route(val route: String) {
 
     object AccountList : Route("account_list")
 
+    object CategoryList : Route("category_list")
+
+    object TagList : Route("tag_list")
+
     object AddNewAccount : Route("add_new_account/{accountId}") {
         fun createRoute(accountId: Int = -1) = "add_new_account/$accountId"
     }

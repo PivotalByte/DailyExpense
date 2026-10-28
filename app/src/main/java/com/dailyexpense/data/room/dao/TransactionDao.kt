@@ -107,6 +107,13 @@ interface TransactionDao {
     @Query("SELECT * FROM DE_transaction ORDER BY date DESC")
     fun getAllTransactionsFull(): Flow<List<TransactionFull>>
 
+    @Transaction
+    @Query("SELECT * FROM DE_transaction ORDER BY date DESC")
+    suspend fun getAllTransactionsFullOnce(): List<TransactionFull>
+
+    @Query("DELETE FROM DE_transaction")
+    suspend fun deleteAllTransactions()
+
     @Query(
         """
         SELECT ABS(SUM(amount)) FROM DE_transaction

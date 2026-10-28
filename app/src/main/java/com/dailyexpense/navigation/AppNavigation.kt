@@ -8,8 +8,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.dailyexpense.ui.screens.AccountListScreen
 import com.dailyexpense.ui.screens.AddNewAccountScreen
+import com.dailyexpense.ui.screens.CategoryListScreen
 import com.dailyexpense.ui.screens.MainScreen
 import com.dailyexpense.ui.screens.NewTransactionScreen
+import com.dailyexpense.ui.screens.TagListScreen
 import com.dailyexpense.ui.screens.TransactionDetailScreen
 
 @Composable
@@ -40,6 +42,12 @@ fun AppNavigation(navController: NavHostController) {
         }
         composable(Route.AccountList.route) {
             AccountListScreen(navController)
+        }
+        composable(Route.CategoryList.route) {
+            CategoryListScreen(navController)
+        }
+        composable(Route.TagList.route) {
+            TagListScreen(navController)
         }
         composable(
             route = Route.AddNewAccount.route,

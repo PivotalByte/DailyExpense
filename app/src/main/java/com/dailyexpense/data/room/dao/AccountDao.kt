@@ -22,6 +22,9 @@ interface AccountDao {
     @Delete
     suspend fun deleteAccount(accountEntity: AccountEntity)
 
+    @Query("DELETE FROM DE_account")
+    suspend fun deleteAllAccounts()
+
     @Query(
         """SELECT COALESCE((SELECT SUM(balance) FROM DE_account), 0) +
         COALESCE((SELECT SUM($NET_AMOUNT) FROM DE_transaction t), 0)"""
